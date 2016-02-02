@@ -10,12 +10,28 @@ import jxl.read.biff.BiffException;
 
 public class Monitor extends InfrastructurePropertires{
 	private String inputFile;
-	private static double p = 0.7;	
 	List<Integer> upactions = new ArrayList<Integer>();
 	public void setInputFile(String path)
 	{
 		this.inputFile = path;
 	}
+	
+	public double GetWorkload(int timeslot) throws IOException
+	{
+		double workload = 0;
+		int timeIndex = timeslot/monitoringInterval;
+		File inputWorkBook = new File(inputFile);
+		Workbook w;
+		try{
+			w = Workbook.getWorkbook(inputWorkBook);
+			Sheet sheet = w.getSheet(0);
+			workload = Double.parseDouble(sheet.getCell(0,timeIndex).getContents());
+		} catch (BiffException e){
+			e.printStackTrace();
+		}
+		return workload;
+	}
+
 	
 	public void Run() throws IOException
 	{
