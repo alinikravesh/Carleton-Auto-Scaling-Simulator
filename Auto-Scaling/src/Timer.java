@@ -22,7 +22,7 @@ public class Timer {
 	private DecisionMaker decisionMaker;
 	private IaaS infrastructure;
 	
-	public Timer(int dur, int inter, int businessTierCap, int databaseTierCap, int businessTierVmBoot, int databaseTierVmBoot) 
+	public Timer(int dur, int inter, int businessTierCap, int databaseTierCap, int businessTierVmBoot, int databaseTierVmBoot, Monitor mon, DecisionMaker dm, IaaS iaas) 
 	{
 		this.interval = inter;
 		this.duration = dur * interval;
@@ -35,33 +35,29 @@ public class Timer {
 		this._btCurCap = this._btCap;
 		this._dtCurCap = this._dtCap;
 		this.currentTime = 0;
+		this.monitor = mon;
+		this.decisionMaker = dm;
+		this.infrastructure = iaas;
 	}
 //	public void updateActionLog(int time, String action)
 //	{
 //		this._actionLog.put(time, action);
 //	}
 	
-	private void Setup()
-	{
-		monitor = new Monitor();
-		decisionMaker = new DecisionMaker();
-		infrastructure = new IaaS();
-	}
 	
 	private void SetAction(String action)
 	{
-		
+		throw new UnsupportedOperationException();
 	}
 	
 	private String GetAction(int time)
 	{
-		String action = "N";
-		return action;
+		throw new UnsupportedOperationException();
 	}
 	
 	private void DoAction(String action)
 	{
-		
+		throw new UnsupportedOperationException();	
 	}
 	
 	private String GetCurrentCapacity(int time)
@@ -69,6 +65,7 @@ public class Timer {
 		int capacity = this._btCap;
 		return Integer.toString(capacity); 
 	}
+	
 	public void tick()
 	{
 		try {
@@ -99,6 +96,7 @@ public class Timer {
 //			System.out.println("time: "+ time +" businessCap: "+ busCap + " databaseCap: "+ datCap);
 //		}
 //	}
+	
 	
 	
 	
