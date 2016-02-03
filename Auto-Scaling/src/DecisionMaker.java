@@ -1,28 +1,48 @@
 
-public class DecisionMaker extends InfrastructurePropertires{
-	private int currentCapacity = appVmCapacityPerMinute; 
+public class DecisionMaker extends InfrastructurePropertires{ 
 	private IaaS infrastructure;
+	private boolean freezFlag = false;
+	private int freezDuration;
 	
 	public DecisionMaker(IaaS iaas)
 	{
 		this.infrastructure = iaas;
 	}
-	public int CalculateCapacity()
+	
+	private void ScalingTimerSet()
 	{
-		return currentCapacity;
+		freezFlag = true;
+		freezDuration = appLayerVmBootUpTime;
 	}
 	
-	public String GenerateScalingAction(double load)
+	private void ScalingTimerTick()
+	{
+		freezDuration -= monitoringInterval;
+		if (freezDuration < 0)
+		{
+			freezFlag = false;
+		}
+	}
+	
+	public String GenerateScalingAction(double load, int time)
 	{
 		String action = "N";
-		double capacity = (double)infrastructure.GetCurrentCapacity();
-		if (capacity < load)
-		{
-			action = "U";
-		}
-		else if (capacity > (double)infrastructure.GetCapacityAfterScaleDown())
+		ScalingTimerTick();
+		if (freezFlag)
+			return action;
+		double ceilingCapacity = (double)infrastructure.GetCurrentCapacity();
+		double floorCapacity = (double)infrastructure.GetCapacityAfterScaleDown();
+		if (floorCapacity > load && floorCapacity > 0)
 		{
 			action = "D";
+//			infrastructure.scaleDown(id, time);
+			ScalingTimerSet();
+		}
+		else if (load > ceilingCapacity)
+		{
+			action = "U";
+			infrastructure.scaleUp(time);
+			ScalingTimerSet();
 		}
 		return action;
 	}

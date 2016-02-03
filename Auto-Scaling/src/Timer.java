@@ -67,14 +67,15 @@ public class Timer {
 	{
 		try {
 			double load = monitor.GetWorkload(currentTime);
-			String scalingAction = decisionMaker.GenerateScalingAction(load);
-			SetAction(scalingAction);
+			String scalingAction = decisionMaker.GenerateScalingAction(load, currentTime);
+			//SetAction(scalingAction);
+			System.out.println(scalingAction);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		String currentAction = GetAction(currentTime);
-		DoAction(currentAction);
-		System.out.println(infrastructure.GetCurrentCapacity());		
+		//String currentAction = GetAction(currentTime);
+//		DoAction(currentAction);
+//		System.out.println(infrastructure.GetCurrentCapacity());		
 		currentTime += interval;
 	}
 	

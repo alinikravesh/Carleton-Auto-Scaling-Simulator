@@ -1,13 +1,11 @@
 
 public class Log {
 	public int time;
-	public int busCurCap;
-	public int datCurCap;
+	public int vmId;
 	
-	public Log(int t, int b, int d)
+	public Log(int t, int i)
 	{
 		time = t;
-		busCurCap = b;
-		datCurCap = d;
+		vmId = i;
 	}
 }
