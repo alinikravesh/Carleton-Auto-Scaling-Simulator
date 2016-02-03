@@ -1,6 +1,6 @@
 import java.io.IOException;
 
-public class Run extends InfrastructurePropertires{
+public class Simulator extends InfrastructurePropertires{
 	public static void main(String[] args) throws IOException
 	{
 		Monitor monitor = new Monitor();
