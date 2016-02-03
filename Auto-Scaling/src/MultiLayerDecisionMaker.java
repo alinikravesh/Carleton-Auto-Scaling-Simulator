@@ -143,15 +143,15 @@ public class MultiLayerDecisionMaker extends InfrastructurePropertires{
 		this._dbTimerFlag = true;
 		this._dbLayerScaleFlag = true;
 	}
-	//	public void Run(int workload)
-//	{
-//		this.Setup();
+	public void Run(int workload)
+	{
+		this.Setup();
 //		char appLayerScalingDecision = this.AppLayerDecisionMaker(workload); 
 //		char dbLayerScalingDecision = this.DBLayerDecisionMaker((int)(workload * _p + 0.5));
 //		System.out.println("Application layer scaling decision is: " + appLayerScalingDecision);
 //		System.out.println("Database layer scaling decision is: " + dbLayerScalingDecision);
-//		System.out.println("Number of VMs in Application layer: " + _appLayerVmCount);
-//		System.out.println("Number of VMs in Database layer: " + _dbLayerVmCount);
-//	}
+		System.out.println("Number of VMs in Application layer: " + _appLayerVmCount);
+		System.out.println("Number of VMs in Database layer: " + _dbLayerVmCount);
+	}
 
 }
