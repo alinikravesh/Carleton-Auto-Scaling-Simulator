@@ -4,10 +4,16 @@ public class Simulator extends InfrastructurePropertires{
 	public static void main(String[] args) throws IOException
 	{
 		Monitor monitor = new Monitor();
-		DecisionMaker decisionMaker = new DecisionMaker();
 		IaaS iaas = new IaaS();
-		Timer timer = new Timer(monitor.GetExperimentDuration(), monitoringInterval,appVmCapacityPerMinute, dbVmCapacityPerMinute, appLayerVmBootUpTime, dbLayerVmBootUpTime, monitor, decisionMaker, iaas);
-		timer.tick();
-				
+		DecisionMaker decisionMaker = new DecisionMaker(iaas);
+		monitor.setInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/CyclicWorkload.xls");
+		int duration = monitor.GetExperimentDuration();
+		Timer timer = new Timer(monitoringInterval,appVmCapacityPerMinute, dbVmCapacityPerMinute, appLayerVmBootUpTime, dbLayerVmBootUpTime, monitor, decisionMaker, iaas);
+		int time = 0;
+		while (time < duration)
+		{
+			timer.tick();
+			time++;
+		}		
 	}
 }

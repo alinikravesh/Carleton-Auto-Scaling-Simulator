@@ -8,7 +8,6 @@ import java.util.Map;
 public class Timer {
 	public int currentTime = 0;
 	public int interval;
-	public int duration;
 	private Map<Integer, String> _actionLog;
 	private int _btCap;
 	private int _btVmBoot;
@@ -22,10 +21,9 @@ public class Timer {
 	private DecisionMaker decisionMaker;
 	private IaaS infrastructure;
 	
-	public Timer(int dur, int inter, int businessTierCap, int databaseTierCap, int businessTierVmBoot, int databaseTierVmBoot, Monitor mon, DecisionMaker dm, IaaS iaas) 
+	public Timer(int inter, int businessTierCap, int databaseTierCap, int businessTierVmBoot, int databaseTierVmBoot, Monitor mon, DecisionMaker dm, IaaS iaas) 
 	{
 		this.interval = inter;
-		this.duration = dur * interval;
 		this._actionLog = new HashMap<Integer,String>(); 
 		this._btCap = businessTierCap;
 		this._btVmBoot = businessTierVmBoot;
@@ -60,10 +58,9 @@ public class Timer {
 		throw new UnsupportedOperationException();	
 	}
 	
-	private String GetCurrentCapacity(int time)
+	public int GetTime()
 	{
-		int capacity = this._btCap;
-		return Integer.toString(capacity); 
+		return currentTime;
 	}
 	
 	public void tick()
@@ -71,13 +68,13 @@ public class Timer {
 		try {
 			double load = monitor.GetWorkload(currentTime);
 			String scalingAction = decisionMaker.GenerateScalingAction(load);
-			SetAction(scalingAction);			
+			SetAction(scalingAction);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		String currentAction = GetAction(currentTime);
 		DoAction(currentAction);
-		System.out.println(GetCurrentCapacity(currentTime));	
+		System.out.println(infrastructure.GetCurrentCapacity());		
 		currentTime += interval;
 	}
 	
