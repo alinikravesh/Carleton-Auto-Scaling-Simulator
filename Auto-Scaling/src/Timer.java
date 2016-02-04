@@ -1,13 +1,14 @@
 import java.io.IOException;
 
-
+//Emulates universal timer
 public class Timer {
-	public int currentTime = 0;
-	public int interval;
+	private int currentTime = 0;
+	private int interval;
 	private Monitor monitor;
 	private DecisionMaker decisionMaker;
 	private IaaS infrastructure;
 	
+	//Constructor
 	public Timer(int inter, Monitor mon, DecisionMaker dm, IaaS iaas) 
 	{
 		this.interval = inter; 
@@ -17,12 +18,13 @@ public class Timer {
 		this.infrastructure = iaas;
 	}
 		
-	
+	//Returns current time
 	public int GetTime()
 	{
 		return currentTime;
 	}
 	
+	//Emulates tick of the universal timer
 	public void tick()
 	{
 		try {

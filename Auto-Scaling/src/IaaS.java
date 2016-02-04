@@ -2,23 +2,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+//Emulates IaaS API
 public class IaaS extends InfrastructurePropertires{
-	public List<VirtualMachine> rentedVM = new ArrayList<VirtualMachine>();
-	public List<Integer> vmIds = new ArrayList<Integer>();
-	private List<Log> spool = new ArrayList<Log>();
-	public int capacity;
+	private List<VirtualMachine> rentedVM = new ArrayList<VirtualMachine>(); //List of rented VM during the experiment
+	private List<Integer> vmIds = new ArrayList<Integer>(); //List of current VM IDs that are up and running
+	private List<Log> spool = new ArrayList<Log>(); //List of VMs that are started but are not operational yet
+	private int capacity; //Current capacity of the IaaS. Capacity refers to the number of requests that VM can handle per minute
 	
+	//Constructor
+	//Adds one VM to the IaaS environment, because each application needs at least one VM to run. 
 	public IaaS()
 	{
 		VirtualMachine vm = new VirtualMachine();
 		vm.start = 0;
-		vm.end = -1;
+		vm.end = -1; //-1 represents that VM is still running
 		vm.id = 0;
-		vm.status = 1;
+		vm.status = 1; //The first VM is up and running at the time on IaaS initialization 
 		vmIds.add(0);
 		rentedVM.add(vm);
 	}
 	
+	//Emulates timer that is used by IaaS environment. 
+	//This timer is used to change state of the started VMs to operational after spending boot-up time period
+	//Receives current time from the universal Timer class
 	public void Tick(int curTime)
 	{
 		List<Integer> _index = new ArrayList<Integer>();
@@ -44,22 +50,29 @@ public class IaaS extends InfrastructurePropertires{
 		}	
 	}
 	
+	//Returns list of the rented VMs
 	public List<VirtualMachine> GetVmList()
 	{
 		return rentedVM;
 	}
 	
+	//Starts a new VM 
+	//Receives VM id and the time that VM should be started
 	private void StartVm(int id, int time)
 	{
 		spool.add(new Log(time, id));
 	}
 	
+	//Finds a new VM inside VM pool
+	//We assume that each application can at most rent 200 VMs during its life
 	private int GetVMNewId()
 	{
 		Random rn = new Random();
 		return rn.nextInt(200) + 1;
 	}
 	
+	//Implements scale up action
+	//Receives current time from the universal Timer class
 	public void scaleUp(int time)
 	{
 		VirtualMachine vm = new VirtualMachine();
@@ -76,6 +89,8 @@ public class IaaS extends InfrastructurePropertires{
 		rentedVM.add(vm);
 	}
 	
+	//Implements scale down action
+	//Receives current time from the universal Timer class. Also receives id of the VM to be stopped
 	public void scaleDown(int id, int time)
 	{
 		for(VirtualMachine vm : rentedVM)
@@ -88,6 +103,7 @@ public class IaaS extends InfrastructurePropertires{
 		vmIds.remove(vmIds.indexOf(id));		
 	}
 	
+	//Calculates current capacity of the IaaS infrastructure
 	public int GetCurrentCapacity()
 	{
 		int capacity = 0;
@@ -102,6 +118,7 @@ public class IaaS extends InfrastructurePropertires{
 		return capacity;
 	}
 	
+	//Calculates capacity of the IaaS environment in the case of taking scale down action
 	public int GetCapacityAfterScaleDown()
 	{
 		if (vmIds.size() < 2)
