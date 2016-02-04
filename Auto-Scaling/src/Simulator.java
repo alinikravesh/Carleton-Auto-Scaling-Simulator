@@ -8,7 +8,7 @@ public class Simulator extends InfrastructurePropertires{
 		DecisionMaker decisionMaker = new DecisionMaker(iaas);
 		monitor.setInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\CyclicWorkload.xls");
 		int duration = monitor.GetExperimentDuration();
-		Timer timer = new Timer(monitoringInterval,appVmCapacityPerMinute, dbVmCapacityPerMinute, appLayerVmBootUpTime, dbLayerVmBootUpTime, monitor, decisionMaker, iaas);
+		Timer timer = new Timer(monitoringInterval, monitor, decisionMaker, iaas);
 		int time = 0;
 		while (time < duration)
 		{

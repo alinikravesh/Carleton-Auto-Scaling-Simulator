@@ -1,3 +1,4 @@
+import java.util.List;
 
 public class DecisionMaker extends InfrastructurePropertires{ 
 	private IaaS infrastructure;
@@ -24,26 +25,47 @@ public class DecisionMaker extends InfrastructurePropertires{
 		}
 	}
 	
-	public String GenerateScalingAction(double load, int time)
+	public void GenerateScalingAction(double load, int time)
 	{
-		String action = "N";
+//		String action = "N";
 		ScalingTimerTick();
 		if (freezFlag)
-			return action;
+			return;
 		double ceilingCapacity = (double)infrastructure.GetCurrentCapacity();
 		double floorCapacity = (double)infrastructure.GetCapacityAfterScaleDown();
-		if (floorCapacity > load && floorCapacity > 0)
+		if (floorCapacity > load)
 		{
-			action = "D";
-//			infrastructure.scaleDown(id, time);
+//			action = "D";
+			int vmIdToBeStopped = -1;
+			int minTimeToFullHour = 100;
+			List<VirtualMachine> rentedVm = infrastructure.GetVmList();
+			for(VirtualMachine vm: rentedVm)
+			{
+				if (vm.end < 0)
+				{
+					int vmRunningDuration = time - vm.start;
+					if (vmRunningDuration%60 == 0)
+					{
+						vmIdToBeStopped = vm.id;
+						break;
+					}
+					int timeToFullHour = (((vmRunningDuration/60)+1)*60)-vmRunningDuration;
+					if (minTimeToFullHour > timeToFullHour)
+					{
+						minTimeToFullHour = timeToFullHour;
+						vmIdToBeStopped = vm.id;
+					}
+				} 
+			}
+			infrastructure.scaleDown(vmIdToBeStopped, time);
 			ScalingTimerSet();
 		}
 		else if (load > ceilingCapacity)
 		{
-			action = "U";
+//			action = "U";
 			infrastructure.scaleUp(time);
 			ScalingTimerSet();
 		}
-		return action;
+		return;
 	}
 }

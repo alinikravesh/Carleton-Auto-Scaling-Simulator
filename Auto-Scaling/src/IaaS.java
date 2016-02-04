@@ -93,7 +93,7 @@ public class IaaS extends InfrastructurePropertires{
 		int capacity = 0;
 		for(VirtualMachine vm : rentedVM)
 		{
-			if (vm.status == 1)
+			if ((vm.status == 1) && (vm.end < 0)) 
 			{
 				capacity += vm.capacity;	
 			}
