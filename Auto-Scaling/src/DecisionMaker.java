@@ -34,18 +34,15 @@ public class DecisionMaker extends InfrastructurePropertires{
 	//Calls IaaS environment API with appropriate scaling actions
 	public void GenerateScalingAction(double load, int time)
 	{
-		String action = "N";
 		ScalingTimerTick();
 		if (freezFlag)
 		{
-			System.out.println(action);
 			return;	
 		}			
 		double ceilingCapacity = (double)infrastructure.GetCurrentCapacity();
 		double floorCapacity = (double)infrastructure.GetCapacityAfterScaleDown();
 		if (floorCapacity > load)
 		{
-			action = "D";
 			int vmIdToBeStopped = -1;
 			int minTimeToFullHour = 100;
 			List<VirtualMachine> rentedVm = infrastructure.GetVmList();
@@ -72,11 +69,9 @@ public class DecisionMaker extends InfrastructurePropertires{
 		}
 		else if (load > ceilingCapacity)
 		{
-			action = "U";
 			infrastructure.scaleUp(time);
 			ScalingTimerSet();
 		}
-		System.out.println(action);
 		return;
 	}
 }

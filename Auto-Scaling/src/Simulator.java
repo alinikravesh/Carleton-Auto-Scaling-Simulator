@@ -14,6 +14,8 @@ public class Simulator extends InfrastructurePropertires{
 		{
 			timer.tick();
 			time++;
-		}		
+		}
+		iaas.EndExperiment(duration*monitoringInterval);
+		System.out.println(Integer.toString(iaas.CalculateOperationalCost()));
 	}
 }

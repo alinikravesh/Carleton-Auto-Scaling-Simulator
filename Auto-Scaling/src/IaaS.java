@@ -40,14 +40,16 @@ public class IaaS extends InfrastructurePropertires{
 						vm.status = 1;
 					}
 				}
+				_index.add(i);
 				
-			}
-			_index.add(i);
+			}			
 		}
-		for (Integer index : _index)
+		for (int index : _index)
 		{
 			spool.remove(index);
 		}	
+		
+		PrintCapacity(curTime);
 	}
 	
 	//Returns list of the rented VMs
@@ -126,5 +128,65 @@ public class IaaS extends InfrastructurePropertires{
 		return (capacity - appVmCapacityPerMinute);
 	}
 	
+	//Calculates operational cost 
+	public int CalculateOperationalCost()
+	{
+		int cost = 0;
+		for(VirtualMachine vm: rentedVM)
+		{
+			int runningMinutes = vm.end - vm.start;
+			int runningHours = 0;
+			if (runningMinutes%60 == 0)
+			{
+				runningHours = runningMinutes/60;
+			}
+			else
+			{
+				runningHours = (runningMinutes/60)+1;
+			}
+			cost += runningHours * vm.price;
+		}
+		
+		return cost;
+	}
+	
+	public void EndExperiment(int duration)
+	{
+		for(VirtualMachine vm: rentedVM)
+		{
+			if (vm.end==-1)
+			{
+				vm.end = duration;
+			}
+		}
+	}
+	
+//	public void PrintRentedVm()
+//	{
+//		System.out.println("-------------------------");
+//		System.out.println("number: "+ rentedVM.size());
+//		for(int i=0; i< rentedVM.size(); i++)
+//		{
+//			System.out.println("VMid " + rentedVM.get(i).id);
+//			System.out.println("start " + rentedVM.get(i).start);
+//			System.out.println("end " + rentedVM.get(i).end);
+//			System.out.println("-------------------------");
+//		}
+//		
+//	}
+	
+	public void PrintCapacity(int curTime)
+	{
+		int capacity = 0;
+		
+		for(VirtualMachine vm : rentedVM)
+		{
+			if (vm.start <= curTime && vm.end ==-1  && vm.status == 1)
+			{
+				capacity += vm.capacity; 
+			}
+		}
+		System.out.println("Time: "+ Integer.toString(curTime)+" Capacity: "+Integer.toString(capacity));
+	}
 
 }
