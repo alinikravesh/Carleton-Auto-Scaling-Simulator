@@ -1,157 +1,139 @@
-
+import java.util.List;
 public class MultiLayerDecisionMaker extends InfrastructurePropertires{
-	private int _appLayerVmCount = 0;
-	private int _dbLayerVmCount = 0;
-	private int _currentAppLayerCapacity; 
-	private int _currentDbLayerCapacity;
-	private boolean _appLayerScaleFlag = false; 
-	private boolean _dbLayerScaleFlag = false; 
-	private int _appTimer = 0;
-	private int _dbTimer = 0;
-	private boolean _appTimerFlag = false;
-	private boolean _dbTimerFlag = false; 
-	
-	public void Setup()
-	{
-		this._currentAppLayerCapacity = appVmCapacityPerMinute;
-		this._appLayerVmCount = 1;
-		this._currentDbLayerCapacity = dbVmCapacityPerMinute;
-		this._dbLayerVmCount = 1;
-	}
-
-
-	public String AppLayerDecisionMaker(double currentLoad)
-	{
-		String action = "N";
-		this.AppTimerTick();
-		if (this._appLayerScaleFlag)
-		{
-			System.out.println(_currentAppLayerCapacity);
-			return action;
-		}
-		if (currentLoad > CalculateAppLayerCapacity())
-		{
-			this._appLayerVmCount++;
-			this._currentAppLayerCapacity += appVmCapacityPerMinute;
-			action = "BU";
-			this.SetAppTimer();
-		}
-		else if(currentLoad < (CalculateAppLayerCapacity() - appVmCapacityPerMinute))
-		{
-			this._appLayerVmCount--;
-			this._currentAppLayerCapacity -= appVmCapacityPerMinute;
-			action = "BD";
-			this.SetAppTimer();
-		}
-		System.out.println(_currentAppLayerCapacity);
-		//System.out.println("load: "+currentLoad + " action: "+action);
-		return action;
-	}
-	
-	private double CalculateAppLayerCapacity() {
-		return  this._currentAppLayerCapacity;
-	}
-
-	public String SimpleAppLayerDecisionMaker(double currentLoad)
-	{
-		String action = "N";
-		if (currentLoad > CalculateAppLayerCapacity())
-		{
-			_appLayerVmCount++;
-			_currentAppLayerCapacity += appVmCapacityPerMinute;
-			action = "BU";
-		}
-		else if(currentLoad < (CalculateAppLayerCapacity() - appVmCapacityPerMinute))
-		{
-			_appLayerVmCount--;
-			_currentAppLayerCapacity -= appVmCapacityPerMinute;
-			action = "BD";
-		}
-//		System.out.println(action);
-		return action;
-	}
-	
-	public String DBLayerDecisionMaker(double currentLoad)
-	{
-		String action = "N";
-		this.DBTimerTick();
-		if (this._dbLayerScaleFlag)
-		{
-			//System.out.println(_currentDbLayerCapacity);
-			return action;
-		}
-		if (currentLoad > this._currentDbLayerCapacity)
-		{
-			this._dbLayerVmCount++;
-			this._currentDbLayerCapacity += dbVmCapacityPerMinute;
-			action = "DU";
-			this.SetDBTimer();
-		}
-		else if(currentLoad < (this._currentDbLayerCapacity - dbVmCapacityPerMinute))
-		{
-			this._dbLayerVmCount--;
-			this._currentDbLayerCapacity -= dbVmCapacityPerMinute;
-			action = "DD";
-			this.SetDBTimer();
-		}
-		//System.out.println(_currentDbLayerCapacity);
-		return action;
-	}
-	
-	private void AppTimerTick()
-	{
-		if (!this._appTimerFlag)
-			this._appLayerScaleFlag = false; 
-		else
-		{
-			this._appTimer += monitoringInterval;
-			if (this._appTimer >= appLayerVmBootUpTime)
-			{
-				this._appTimerFlag = false; 
-				this._appLayerScaleFlag = false; 
-			}
-		}
-		
-	}
-	
-	private void DBTimerTick()
-	{
-		if (!this._dbTimerFlag)
-			this._dbLayerScaleFlag = false; 
-		else
-		{
-			this._dbTimer += monitoringInterval;
-			if (this._dbTimer >= dbLayerVmBootUpTime)
-			{
-				this._dbTimerFlag = false; 
-				this._dbLayerScaleFlag = false; 
-			}
-		}
-		
-	}
-	
-	private void SetAppTimer()
-	{
-		this._appTimer = 0;
-		this._appTimerFlag = true;
-		this._appLayerScaleFlag = true;
-	}
-	
-	private void SetDBTimer()
-	{
-		this._dbTimer = 0;
-		this._dbTimerFlag = true;
-		this._dbLayerScaleFlag = true;
-	}
-	public void Run(int workload)
-	{
-		this.Setup();
-//		char appLayerScalingDecision = this.AppLayerDecisionMaker(workload); 
-//		char dbLayerScalingDecision = this.DBLayerDecisionMaker((int)(workload * _p + 0.5));
-//		System.out.println("Application layer scaling decision is: " + appLayerScalingDecision);
-//		System.out.println("Database layer scaling decision is: " + dbLayerScalingDecision);
-		System.out.println("Number of VMs in Application layer: " + _appLayerVmCount);
-		System.out.println("Number of VMs in Database layer: " + _dbLayerVmCount);
-	}
-
+//	private MlIaaS infrastructure;
+//	private boolean blFreezFlag = false;
+//	private boolean dlFreezFlag = false;
+//	private int blFreezDuration;
+//	private int dlFreezDuration;
+//	
+//	//Constructor
+//	public MultiLayerDecisionMaker(MlIaaS iaas)
+//	{
+//		this.infrastructure = iaas;
+//	}
+//	
+//	//Sets a timer to freeze decision maker to prevent VM thrashing
+//	private void ScalingBlTimerSet()
+//	{
+//		blFreezFlag = true;
+//		blFreezDuration = appLayerVmBootUpTime; //we assume decision maker freezes until the new VM is up and running. This is because of VM thrashing issue
+//	}
+//	
+//	private void ScalingDlTimerSet()
+//	{
+//		dlFreezFlag = true;
+//		blFreezDuration = appLayerVmBootUpTime; //we assume decision maker freezes until the new VM is up and running. This is because of VM thrashing issue
+//	}
+//	
+//	//Emulates a timer that keeps account of the freezing period
+//	private void ScalingTimerTick()
+//	{
+//		dlFreezDuration -= monitoringInterval;
+//		blFreezDuration -= monitoringInterval;
+//		if (dlFreezDuration < 0)
+//		{
+//			dlFreezFlag = false;
+//		}
+//		if (blFreezDuration < 0)
+//		{
+//			blFreezFlag = false;
+//		}
+//	}
+//	
+//	
+//	public void BlGenerateScalingAction(double load, int time)
+//	{
+//		if (blFreezFlag)
+//		{
+//			return;	
+//		}			
+//		double blCeilingCapacity = (double)infrastructure.GetBlCurrentCapacity();
+//		double blFloorCapacity = (double)infrastructure.GetBlCapacityAfterScaleDown();
+//		if (blFloorCapacity > load)
+//		{
+//			int vmIdToBeStopped = -1;
+//			int minTimeToFullHour = 100;
+//			List<VirtualMachine> rentedVm = infrastructure.GetBlVmList();
+//			for(VirtualMachine vm: rentedVm)
+//			{
+//				if (vm.end < 0)
+//				{
+//					int vmRunningDuration = time - vm.start;
+//					if (vmRunningDuration%60 == 0)
+//					{
+//						vmIdToBeStopped = vm.id;
+//						break;
+//					}
+//					int timeToFullHour = (((vmRunningDuration/60)+1)*60)-vmRunningDuration;
+//					if (minTimeToFullHour > timeToFullHour)
+//					{
+//						minTimeToFullHour = timeToFullHour;
+//						vmIdToBeStopped = vm.id;
+//					}
+//				} 
+//			}
+//			infrastructure.ScaleBlDown(vmIdToBeStopped, time);
+//			ScalingBlTimerSet();
+//		}
+//		else if (load > ceilingCapacity)
+//		{
+//			infrastructure.ScaleBlUp(time);
+//			ScalingBlTimerSet();
+//		}
+//		return;
+//	}
+//	
+//	public void DlGenerateScalingAction(double load, int time)
+//	{
+//		if (dlFreezFlag)
+//		{
+//			return;	
+//		}			
+//		double dlCeilingCapacity = (double)infrastructure.GetDlCurrentCapacity();
+//		double dlFloorCapacity = (double)infrastructure.GetDlCapacityAfterScaleDown();
+//		if (dlFloorCapacity > load)
+//		{
+//			int vmIdToBeStopped = -1;
+//			int minTimeToFullHour = 100;
+//			List<VirtualMachine> rentedVm = infrastructure.GetBlVmList();
+//			for(VirtualMachine vm: rentedVm)
+//			{
+//				if (vm.end < 0)
+//				{
+//					int vmRunningDuration = time - vm.start;
+//					if (vmRunningDuration%60 == 0)
+//					{
+//						vmIdToBeStopped = vm.id;
+//						break;
+//					}
+//					int timeToFullHour = (((vmRunningDuration/60)+1)*60)-vmRunningDuration;
+//					if (minTimeToFullHour > timeToFullHour)
+//					{
+//						minTimeToFullHour = timeToFullHour;
+//						vmIdToBeStopped = vm.id;
+//					}
+//				} 
+//			}
+//			infrastructure.ScaleDlDown(vmIdToBeStopped, time);
+//			ScalingDlTimerSet();
+//		}
+//		else if (load > dlCeilingCapacity)
+//		{
+//			infrastructure.ScaleDlUp(time);
+//			ScalingDlTimerSet();
+//		}
+//		return;
+//	}
+//	
+//	
+//	//Generates scaling actions
+//	//Receives the current workload and the current time
+//	//Calls IaaS environment API with appropriate scaling actions
+//	public void GenerateScalingAction(double load, int time)
+//	{
+//		ScalingTimerTick();
+//		BlGenerateScalingAction(load, time);
+//		DlGenerateScalingAction(load*databaseAccessRate, time);
+//		return;
+//	}
 }

@@ -5,4 +5,5 @@ public class InfrastructurePropertires {
 	protected static int appVmCapacityPerMinute = 20; //Capacity of application layer VMs
 	protected static int dbVmCapacityPerMinute = 30; //Capacity of database layer VMs
 	protected static int monitoringInterval = 5; //Monitoring interval of the auto-scaling system
+	protected static double databaseAccessRate = 0.7;
 }
