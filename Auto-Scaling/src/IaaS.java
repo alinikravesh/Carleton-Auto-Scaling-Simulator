@@ -6,8 +6,10 @@ import java.util.Random;
 public class IaaS extends InfrastructurePropertires{
 	private List<VirtualMachine> rentedVM = new ArrayList<VirtualMachine>(); //List of rented VM during the experiment
 	private List<Integer> vmIds = new ArrayList<Integer>(); //List of current VM IDs that are up and running
+	private int currentVmCount = 0;
 	private List<Log> spool = new ArrayList<Log>(); //List of VMs that are started but are not operational yet
 	private int capacity; //Current capacity of the IaaS. Capacity refers to the number of requests that VM can handle per minute
+	private int vmThrashing = 0;
 	
 	//Constructor
 	//Adds one VM to the IaaS environment, because each application needs at least one VM to run. 
@@ -17,8 +19,9 @@ public class IaaS extends InfrastructurePropertires{
 		vm.start = 0;
 		vm.end = -1; //-1 represents that VM is still running
 		vm.id = 0;
-		vm.status = 1; //The first VM is up and running at the time on IaaS initialization 
+		vm.status = 1; //The first VM is up and running at the time on IaaS initialization
 		vmIds.add(0);
+		currentVmCount = 1;
 		rentedVM.add(vm);
 	}
 	
@@ -49,7 +52,7 @@ public class IaaS extends InfrastructurePropertires{
 			spool.remove(index);
 		}	
 		
-		PrintCapacity(curTime);
+//		PrintCapacity(curTime);
 	}
 	
 	//Returns list of the rented VMs
@@ -77,6 +80,7 @@ public class IaaS extends InfrastructurePropertires{
 	//Receives current time from the universal Timer class
 	public void scaleUp(int time)
 	{
+		vmThrashing++;
 		VirtualMachine vm = new VirtualMachine();
 		vm.start = time;
 		vm.end = -1;
@@ -87,6 +91,7 @@ public class IaaS extends InfrastructurePropertires{
 			vm.id = GetVMNewId();
 		}
 		vmIds.add(vm.id);
+		currentVmCount++;
 		StartVm(vm.id, time);
 		rentedVM.add(vm);
 	}
@@ -95,6 +100,7 @@ public class IaaS extends InfrastructurePropertires{
 	//Receives current time from the universal Timer class. Also receives id of the VM to be stopped
 	public void scaleDown(int id, int time)
 	{
+		vmThrashing++;
 		for(VirtualMachine vm : rentedVM)
 		{
 			if(vm.id == id)
@@ -102,7 +108,7 @@ public class IaaS extends InfrastructurePropertires{
 				vm.end = time;
 			}
 		}
-		vmIds.remove(vmIds.indexOf(id));		
+		currentVmCount--;
 	}
 	
 	//Calculates current capacity of the IaaS infrastructure
@@ -120,10 +126,29 @@ public class IaaS extends InfrastructurePropertires{
 		return capacity;
 	}
 	
+	public int GetNumberOfVms()
+	{
+		return this.currentVmCount;
+	}
+	public int GetCurrentCapacity(double load)
+	{
+		int capacity = 0;
+		int workload = (int)Math.ceil(load);
+//		int numberOf
+		return capacity;
+	}
+	
 	//Calculates capacity of the IaaS environment in the case of taking scale down action
 	public int GetCapacityAfterScaleDown()
 	{
-		if (vmIds.size() < 2)
+		if (currentVmCount < 2)
+			return -20;
+		return (capacity - appVmCapacityPerMinute);
+	}
+	
+	public int GetCapacityAfterScaleDown(double load)
+	{
+		if (currentVmCount < 2)
 			return -20;
 		return (capacity - appVmCapacityPerMinute);
 	}
@@ -161,19 +186,19 @@ public class IaaS extends InfrastructurePropertires{
 		}
 	}
 	
-//	public void PrintRentedVm()
-//	{
-//		System.out.println("-------------------------");
-//		System.out.println("number: "+ rentedVM.size());
-//		for(int i=0; i< rentedVM.size(); i++)
-//		{
-//			System.out.println("VMid " + rentedVM.get(i).id);
-//			System.out.println("start " + rentedVM.get(i).start);
-//			System.out.println("end " + rentedVM.get(i).end);
-//			System.out.println("-------------------------");
-//		}
-//		
-//	}
+	public void PrintRentedVm()
+	{
+		System.out.println("-------------------------");
+		System.out.println("number: "+ rentedVM.size());
+		for(int i=0; i< rentedVM.size(); i++)
+		{
+			System.out.println("VMid " + rentedVM.get(i).id);
+			System.out.println("start " + rentedVM.get(i).start);
+			System.out.println("end " + rentedVM.get(i).end);
+			System.out.println("-------------------------");
+		}
+		
+	}
 	
 	public void PrintCapacity(int curTime)
 	{
@@ -187,6 +212,11 @@ public class IaaS extends InfrastructurePropertires{
 			}
 		}
 		System.out.println("Time: "+ Integer.toString(curTime)+" Capacity: "+Integer.toString(capacity));
+	}
+	
+	public int GetVmThrashing()
+	{
+		return this.vmThrashing;
 	}
 
 }
