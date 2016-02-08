@@ -1,3 +1,5 @@
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,7 +30,7 @@ public class IaaS extends InfrastructurePropertires{
 	//Emulates timer that is used by IaaS environment. 
 	//This timer is used to change state of the started VMs to operational after spending boot-up time period
 	//Receives current time from the universal Timer class
-	public void Tick(int curTime)
+	public void Tick(int curTime, boolean printCapFlag)
 	{
 		List<Integer> _index = new ArrayList<Integer>();
 		for(int i=0; i< spool.size(); i++)
@@ -51,8 +53,8 @@ public class IaaS extends InfrastructurePropertires{
 		{
 			spool.remove(index);
 		}	
-		
-//		PrintCapacity(curTime);
+		if (printCapFlag)
+			PrintCapacity(curTime);
 	}
 	
 	//Returns list of the rented VMs
@@ -119,7 +121,7 @@ public class IaaS extends InfrastructurePropertires{
 		{
 			if ((vm.status == 1) && (vm.end < 0)) 
 			{
-				capacity += vm.capacity;	
+				capacity += appVmCapacityPerMinute;	
 			}
 		}
 		this.capacity = capacity;
@@ -130,23 +132,22 @@ public class IaaS extends InfrastructurePropertires{
 	{
 		return this.currentVmCount;
 	}
-	public int GetCurrentCapacity(double load)
+	
+	private int GetNumberOfUpVms()
 	{
-		int capacity = 0;
-		int workload = (int)Math.ceil(load);
-//		int numberOf
-		return capacity;
+		int res = 0;
+		for(VirtualMachine vm : rentedVM)
+		{
+			if ((vm.status == 1) && (vm.end == -1))
+			{
+				res++;
+			}
+		}
+		return res;
 	}
 	
 	//Calculates capacity of the IaaS environment in the case of taking scale down action
 	public int GetCapacityAfterScaleDown()
-	{
-		if (currentVmCount < 2)
-			return -20;
-		return (capacity - appVmCapacityPerMinute);
-	}
-	
-	public int GetCapacityAfterScaleDown(double load)
 	{
 		if (currentVmCount < 2)
 			return -20;
@@ -203,12 +204,13 @@ public class IaaS extends InfrastructurePropertires{
 	public void PrintCapacity(int curTime)
 	{
 		int capacity = 0;
+		int unitCap = (int)Math.floor(60/serviceDemand);
 		
 		for(VirtualMachine vm : rentedVM)
 		{
 			if (vm.start <= curTime && vm.end ==-1  && vm.status == 1)
 			{
-				capacity += vm.capacity; 
+				capacity += unitCap; 
 			}
 		}
 		System.out.println("Time: "+ Integer.toString(curTime)+" Capacity: "+Integer.toString(capacity));
@@ -219,4 +221,18 @@ public class IaaS extends InfrastructurePropertires{
 		return this.vmThrashing;
 	}
 
+	public double GetResponseTime(double load)
+	{
+		double responseTime = 0.0;
+		double workload = load / this.GetNumberOfUpVms();
+		responseTime = serviceDemand/(1-(serviceDemand*workload));
+		BigDecimal tmp = new BigDecimal(responseTime);
+		tmp = tmp.setScale(2, RoundingMode.HALF_UP);
+		responseTime = tmp.doubleValue();
+		if (responseTime < 0 || responseTime > 10)
+		{
+			responseTime = 10;
+		}
+		return responseTime;
+	}
 }

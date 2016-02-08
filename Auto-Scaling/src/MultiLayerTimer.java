@@ -1,7 +1,6 @@
 import java.io.IOException;
-import java.sql.DatabaseMetaData;
 
-//Emulates universal timer
+//Emulates universal timer for multi-layer environments 
 public class MultiLayerTimer extends InfrastructurePropertires{
 	private int currentTime = 0;
 	private int interval;
@@ -10,9 +9,11 @@ public class MultiLayerTimer extends InfrastructurePropertires{
 	private DecisionMaker dlDecisionMaker;
 	private IaaS blInfrastructure;
 	private IaaS dlInfrastructure;
+	private int slaViolationCount;
+	private boolean fullHourFlag;
 	
 	//Constructor
-	public MultiLayerTimer(int inter, Monitor mon, DecisionMaker bldm, DecisionMaker dldm,IaaS bliaas, IaaS dliaas) 
+	public MultiLayerTimer(int inter, Monitor mon, DecisionMaker bldm, DecisionMaker dldm,IaaS bliaas, IaaS dliaas, boolean fullHour) 
 	{
 		this.interval = inter; 
 		this.currentTime = 0;
@@ -21,6 +22,7 @@ public class MultiLayerTimer extends InfrastructurePropertires{
 		this.blInfrastructure = bliaas;
 		this.dlDecisionMaker = dldm;
 		this.dlInfrastructure = dliaas;
+		this.fullHourFlag = fullHour;
 	}
 		
 	//Returns current time
@@ -34,14 +36,31 @@ public class MultiLayerTimer extends InfrastructurePropertires{
 	{
 		try {
 			double load = monitor.GetWorkload(currentTime);
-			blDecisionMaker.GenerateScalingAction(load, currentTime);
-			blInfrastructure.Tick(currentTime);
-			dlDecisionMaker.GenerateScalingAction(load*databaseAccessRate, currentTime);
-			dlInfrastructure.Tick(currentTime);
+			if (fullHourFlag)
+			{
+				blDecisionMaker.GenerateScalingActionFullHour(load, currentTime, this.blInfrastructure);
+				dlDecisionMaker.GenerateScalingActionFullHour(load*databaseAccessRate, currentTime, this.dlInfrastructure);
+			}
+			else
+			{
+				blDecisionMaker.GenerateScalingAction(load, currentTime, this.blInfrastructure);
+				dlDecisionMaker.GenerateScalingAction(load*databaseAccessRate, currentTime, this.dlInfrastructure);
+			}
+			blInfrastructure.Tick(currentTime, false);
+			dlInfrastructure.Tick(currentTime, false);
+			if (blInfrastructure.GetResponseTime(load) > 7)
+			{
+				slaViolationCount++;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		currentTime += interval;
 	}	
+	
+	public int GetSlaViolationCount()
+	{
+		return slaViolationCount;
+	}
 }
 

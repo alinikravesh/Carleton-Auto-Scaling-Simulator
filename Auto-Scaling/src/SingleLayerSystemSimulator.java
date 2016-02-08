@@ -5,7 +5,7 @@ public class SingleLayerSystemSimulator extends InfrastructurePropertires{
 	{		
 		Monitor monitor = new Monitor();
 		IaaS iaas = new IaaS();
-		DecisionMaker decisionMaker = new DecisionMaker();	
+		DecisionMaker decisionMaker = new ThresholdBasedDecisionMaker();	
 		monitor.setInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\CyclicWorkload.xls");
 		int duration = monitor.GetExperimentDuration();
 		Timer timer = new Timer(monitoringInterval, monitor, decisionMaker, iaas, dontKillVmBeforeFullHour);
@@ -18,5 +18,6 @@ public class SingleLayerSystemSimulator extends InfrastructurePropertires{
 		iaas.EndExperiment(duration*monitoringInterval);
 		System.out.println("Operational Cost: "+Integer.toString(iaas.CalculateOperationalCost()));
 		System.out.println("VM Thrashing: " + Integer.toString(iaas.GetVmThrashing()));
+		System.out.println("SLA Violation Count: "+ Integer.toString(timer.GetSlaViolationCount()));
 	}
 }
