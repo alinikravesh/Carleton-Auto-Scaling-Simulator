@@ -6,32 +6,19 @@ public class Timer {
 	private int interval;
 	private Monitor monitor;
 	private DecisionMaker decisionMaker;
-	private IaaS infrastructure;
-	private boolean fullHourFlag;
-	private boolean printCapacityFlag = false;
+	private Application app;
 	private int slaViolationCount;
 	
 	//Constructor
-	public Timer(int inter, Monitor mon, DecisionMaker dm, IaaS iaas, boolean fullHour, boolean printCap) 
+	public Timer(int inter, Monitor mon, DecisionMaker dm, Application app) 
 	{
 		this.interval = inter; 
 		this.currentTime = 0;
 		this.monitor = mon;
 		this.decisionMaker = dm;
-		this.infrastructure = iaas;
-		this.fullHourFlag = fullHour;
-		this.printCapacityFlag = printCap;
+		this.app = app;
 	}
 	
-	public Timer(int inter, Monitor mon, DecisionMaker dm, IaaS iaas, boolean fullHour) 
-	{
-		this.interval = inter; 
-		this.currentTime = 0;
-		this.monitor = mon;
-		this.decisionMaker = dm;
-		this.infrastructure = iaas;
-		this.fullHourFlag = fullHour;
-	}
 		
 	//Returns current time
 	public int GetTime()
@@ -43,17 +30,10 @@ public class Timer {
 	public void tick()
 	{
 		try {
-			double load = monitor.GetWorkload(currentTime);
-			if (fullHourFlag)
-			{
-				decisionMaker.GenerateScalingActionFullHour(load, currentTime, this.infrastructure);	
-			}
-			else
-			{
-				decisionMaker.GenerateScalingAction(load, currentTime, this.infrastructure);
-			}
-			infrastructure.Tick(currentTime, printCapacityFlag);
-			if (infrastructure.GetResponseTime(load) > 7)
+			double load = monitor.GetWorkload(currentTime);			
+			decisionMaker.GenerateScalingAction(load, currentTime, app);	
+//			app.Tick(currentTime);
+			if (app.GetResponseTime(load) > InfrastructurePropertires.responseTimeThreshold)
 			{
 				slaViolationCount++;
 			}

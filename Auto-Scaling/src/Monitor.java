@@ -8,7 +8,7 @@ public class Monitor extends InfrastructurePropertires{
 	private String inputFile;
 	
 	//Sets path of input excel file that contains workload trace
-	public void setInputFile(String path)
+	public void SetInputFile(String path)
 	{
 		this.inputFile = path;
 	}

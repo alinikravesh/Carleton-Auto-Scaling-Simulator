@@ -3,8 +3,7 @@ public abstract class DecisionMaker extends InfrastructurePropertires{
 	protected boolean freezFlag = false;
 	protected int freezDuration;
 	
-	public abstract void GenerateScalingAction(double load, int time, IaaS infrastructure);
-	public abstract void GenerateScalingActionFullHour(double load, int time, IaaS infrastructure);
+	public abstract void GenerateScalingAction(double load, int time, Application app);
 	protected  void ScalingTimerSet()
 	{
 		freezFlag = true;
