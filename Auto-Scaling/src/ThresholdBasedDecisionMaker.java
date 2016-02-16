@@ -68,6 +68,7 @@ public class ThresholdBasedDecisionMaker extends DecisionMaker{
 			{
 				infrastructure.scaleUp(time);
 				ScalingTimerSet();
+				//test
 			}
 		}
 
