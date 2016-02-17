@@ -3,7 +3,6 @@ import java.io.IOException;
 
 import Application.Application;
 import Application.SoftwareTier;
-import ScalingUnit.DecisionMaker;
 import ScalingUnit.ThresholdBasedDecisionMaker;
 
 public class Simulator{
@@ -19,7 +18,7 @@ public class Simulator{
 		SoftwareTier bt = new SoftwareTier("BusinessTier", btServDem, btAccessR, biaas, 0);
 
 		//create database tier
-		double dtServDem = 0.000001;
+		double dtServDem = 0.0001;
 		double dtAccessR = 0.7;
 		int dtVmBt = 15;
 		IaaS diaas = new IaaS(dtVmBt, dtServDem);
@@ -35,7 +34,7 @@ public class Simulator{
 		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\CyclicWorkload.xls");
 		
 		//create decision maker
-		DecisionMaker decisionMaker = new ThresholdBasedDecisionMaker(app);
+		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);
 		
 		//create timer and start the simulation
 		Timer timer = new Timer(monitoringInterval, monitor, decisionMaker, app);

@@ -36,6 +36,11 @@ public class SoftwareTier {
 		return number;
 	}
 	
+	public String GetName()
+	{
+		return name;
+	}
+	
 	public IaaS GetIaaS()
 	{
 		return iaas;
@@ -49,6 +54,8 @@ public class SoftwareTier {
 		BigDecimal tmp = new BigDecimal(responseTime);
 		tmp = tmp.setScale(2, RoundingMode.HALF_UP);
 		responseTime = tmp.doubleValue();
+		if (responseTime < 0)
+			responseTime = 100;
 		return responseTime;
 	}
 	

@@ -5,10 +5,11 @@ import java.util.List;
 import Application.Application;
 import Application.SoftwareTier;
 import Common.IaaS;
+import Common.ScalingUnitInterface;
 import Common.Simulator;
 import Common.VirtualMachine;
 
-public class ThresholdBasedDecisionMaker extends DecisionMaker{ 
+public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{ 
 	private int tierCount = 0;
 	private List<FreezingInfo> freezingFlags = new ArrayList<FreezingInfo>();
 	private Application app = new Application();
@@ -40,9 +41,9 @@ public class ThresholdBasedDecisionMaker extends DecisionMaker{
 		ScalingTimerTick();		
 		for(int i=0; i<app.GetTierCount(); i++)
 		{
+			SoftwareTier st = app.GetTier(i);
 			if (!GetStatus(i))
 			{
-				SoftwareTier st = app.GetTier(i);
 				IaaS iaas = st.GetIaaS();
 				double ceilingCapacity = (double)iaas.GetCurrentCapacity();
 				double floorCapacity = (double)iaas.GetCapacityAfterScaleDown();
@@ -70,14 +71,28 @@ public class ThresholdBasedDecisionMaker extends DecisionMaker{
 							}
 						} 
 					}
+//					if (st.GetName().startsWith("Bu"))
+//						System.out.println("Time: "+time+" Layer:"+st.GetName()+" -1");
 					iaas.ScaleDown(vmIdToBeStopped, time);
 					ScalingTimerSet(i);
 				}
 				else if (workload > ceilingCapacity)
 				{
+//					if (st.GetName().startsWith("Bu"))
+//						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 1");
 					iaas.ScaleUp(time);
 					ScalingTimerSet(i);
 				}
+				else
+				{
+//					if (st.GetName().startsWith("Bu"))
+//						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
+				}
+			}
+			else
+			{
+//				if (st.GetName().startsWith("Bu"))
+//					System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
 			}
 		}
 		return;

@@ -2,19 +2,19 @@ package Common;
 import java.io.IOException;
 
 import Application.Application;
-import ScalingUnit.DecisionMaker;
+import Application.SoftwareTier;
 
 //Emulates universal timer
 public class Timer {
 	private int currentTime = 0;
 	private int interval;
 	private Monitor monitor;
-	private DecisionMaker decisionMaker;
+	private ScalingUnitInterface decisionMaker;
 	private Application app;
 	private int slaViolationCount;
 	
 	//Constructor
-	public Timer(int inter, Monitor mon, DecisionMaker dm, Application app) 
+	public Timer(int inter, Monitor mon, ScalingUnitInterface dm, Application app) 
 	{
 		this.interval = inter; 
 		this.currentTime = 0;
@@ -36,7 +36,10 @@ public class Timer {
 		try {
 			double load = monitor.GetWorkload(currentTime);			
 			decisionMaker.GenerateScalingAction(load, currentTime, app);	
-//			app.Tick(currentTime);
+			for(SoftwareTier st : app.GetTiers())
+			{
+				st.GetIaaS().Tick(currentTime);	
+			}
 			if (app.GetResponseTime(load) > Application.responseTimeThreshold)
 			{
 				slaViolationCount++;
