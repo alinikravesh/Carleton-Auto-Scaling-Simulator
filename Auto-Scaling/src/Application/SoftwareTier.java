@@ -9,14 +9,16 @@ public class SoftwareTier {
 	private double serviceDemand; 
 	private double accessRate; 
 	private String name;
+	private int number;
 	private IaaS iaas;
 	
-	public SoftwareTier(String tname, double demand, double rate, IaaS infrastructure)
+	public SoftwareTier(String tname, double demand, double rate, IaaS infrastructure, int num)
 	{
 		name = tname;
 		serviceDemand = demand;
 		accessRate = rate;
 		iaas = infrastructure;
+		number = num;
 	}
 	
 	public double GetDemand()
@@ -27,6 +29,16 @@ public class SoftwareTier {
 	public double GetAccessRate()
 	{
 		return accessRate;
+	}
+	
+	public int GetNumber()
+	{
+		return number;
+	}
+	
+	public IaaS GetIaaS()
+	{
+		return iaas;
 	}
 	
 	public double GetResponseTime(double load)

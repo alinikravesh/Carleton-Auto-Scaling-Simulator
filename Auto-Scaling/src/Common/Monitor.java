@@ -5,7 +5,7 @@ import jxl.*;
 import jxl.read.biff.BiffException;
 
 //Emulates monitor component of auto-scaling system
-public class Monitor extends InfrastructurePropertires{
+public class Monitor {
 	private String inputFile;
 	
 	//Sets path of input excel file that contains workload trace
@@ -18,7 +18,7 @@ public class Monitor extends InfrastructurePropertires{
 	public double GetWorkload(int timeslot) throws IOException
 	{
 		double workload = 0;
-		int timeIndex = timeslot/monitoringInterval;
+		int timeIndex = timeslot/Simulator.monitoringInterval;
 		File inputWorkBook = new File(inputFile);
 		Workbook w;
 		try{

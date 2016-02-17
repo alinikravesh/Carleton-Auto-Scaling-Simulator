@@ -30,6 +30,11 @@ public class IaaS{
 		rentedVM.add(vm);
 	}
 	
+	public int GetVmBootUpTime()
+	{
+		return vmBootUpTime;
+	}
+	
 	//Emulates timer that is used by IaaS environment. 
 	//This timer is used to change state of the started VMs to operational after spending boot-up time period
 	//Receives current time from the universal Timer class

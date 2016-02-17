@@ -6,7 +6,9 @@ import Application.SoftwareTier;
 import ScalingUnit.DecisionMaker;
 import ScalingUnit.ThresholdBasedDecisionMaker;
 
-public class SingleLayerSystemSimulator{
+public class Simulator{
+	public static int monitoringInterval = 5;
+	
 	public static void main(String[] args) throws IOException
 	{		
 		//create business tier
@@ -14,14 +16,14 @@ public class SingleLayerSystemSimulator{
 		double btAccessR = 1.0;
 		int btVmBT = 10;
 		IaaS biaas = new IaaS(btVmBT, btServDem);
-		SoftwareTier bt = new SoftwareTier("BusinessTier", btServDem, btAccessR, biaas);
+		SoftwareTier bt = new SoftwareTier("BusinessTier", btServDem, btAccessR, biaas, 0);
 
 		//create database tier
 		double dtServDem = 0.000001;
 		double dtAccessR = 0.7;
 		int dtVmBt = 15;
 		IaaS diaas = new IaaS(dtVmBt, dtServDem);
-		SoftwareTier dt = new SoftwareTier("DatabaseTier", dtServDem, dtAccessR, diaas);
+		SoftwareTier dt = new SoftwareTier("DatabaseTier", dtServDem, dtAccessR, diaas, 1);
 		
 		//create application
 		Application app = new Application();
@@ -29,12 +31,11 @@ public class SingleLayerSystemSimulator{
 		app.AddTier(dt);
 		
 		//create monitor
-		int monitoringInterval = 5;
 		Monitor monitor = new Monitor();
 		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\CyclicWorkload.xls");
 		
 		//create decision maker
-		DecisionMaker decisionMaker = new ThresholdBasedDecisionMaker();
+		DecisionMaker decisionMaker = new ThresholdBasedDecisionMaker(app);
 		
 		//create timer and start the simulation
 		Timer timer = new Timer(monitoringInterval, monitor, decisionMaker, app);

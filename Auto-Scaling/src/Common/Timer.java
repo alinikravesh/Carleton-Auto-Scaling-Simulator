@@ -37,7 +37,7 @@ public class Timer {
 			double load = monitor.GetWorkload(currentTime);			
 			decisionMaker.GenerateScalingAction(load, currentTime, app);	
 //			app.Tick(currentTime);
-			if (app.GetResponseTime(load) > InfrastructurePropertires.responseTimeThreshold)
+			if (app.GetResponseTime(load) > Application.responseTimeThreshold)
 			{
 				slaViolationCount++;
 			}

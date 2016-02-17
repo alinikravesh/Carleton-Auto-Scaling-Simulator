@@ -1,81 +1,108 @@
 package ScalingUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import Application.Application;
+import Application.SoftwareTier;
+import Common.IaaS;
+import Common.Simulator;
 import Common.VirtualMachine;
 
 public class ThresholdBasedDecisionMaker extends DecisionMaker{ 
+	private int tierCount = 0;
+	private List<FreezingInfo> freezingFlags = new ArrayList<FreezingInfo>();
+	private Application app = new Application();
+	
+	public ThresholdBasedDecisionMaker(Application appl) {
+		app = appl;
+		tierCount = app.GetTierCount();
+		for (int i=0; i<tierCount; i++)
+		{
+			freezingFlags.add(new FreezingInfo(i, false, app.GetTier(i).GetIaaS().GetVmBootUpTime()));
+		}
+	}
+	
+	private boolean GetStatus(int i)
+	{
+		boolean res = false; 
+		for(FreezingInfo inf: freezingFlags)
+		{
+			if (inf.number == i)
+			{
+				res = inf.status;
+			}
+		}
+		return res;
+	}
 	
 	public void GenerateScalingAction(double load, int time, Application app)
 	{
-		ScalingTimerTick();
-		if (freezFlag)
+		ScalingTimerTick();		
+		for(int i=0; i<app.GetTierCount(); i++)
 		{
-			return;	
-		}			
-		double btCeilingCapacity = (double)app.GetBtIaaS().GetCurrentCapacity();
-		double btFloorCapacity = (double)app.GetBtIaaS().GetCapacityAfterScaleDown();
-		double dtCeilingCapacity = (double)app.GetDtIaaS().GetCurrentCapacity();
-		double dtFloorCapacity = (double)app.GetDtIaaS().GetCapacityAfterScaleDown();
-		
-		int bottleneck = -1; //0 is business and 1 is database tiers
-		
-		if ((1/app.GetBussServDemand() <= load))
-		{
-			bottleneck = 0;
-		}
-		else if ((1/app.GetDbServDemand() <= load*app.GetDbAccessRate()))
-		{
-			bottleneck = 1;
-		}
-		
-		if (bottleneck == 0)
-		{
-			app.GetBtIaaS().ScaleUp(time);
-			return;
-		}
-		else if (bottleneck == 1)
-		{
-			app.GetDtIaaS().ScaleUp(time);
-			return;
-		}
-		
-		else
-		{
-			if (floorCapacity > load)
+			if (!GetStatus(i))
 			{
-				int vmIdToBeStopped = -1;
-				int minTimeToFullHour = 100;
-				List<VirtualMachine> rentedVm = infrastructure.GetVmList();
-				for(VirtualMachine vm: rentedVm)
+				SoftwareTier st = app.GetTier(i);
+				IaaS iaas = st.GetIaaS();
+				double ceilingCapacity = (double)iaas.GetCurrentCapacity();
+				double floorCapacity = (double)iaas.GetCapacityAfterScaleDown();
+				double workload = load * st.GetAccessRate();
+				if (floorCapacity > workload)
 				{
-					if (vm.end < 0)
+					int vmIdToBeStopped = -1;
+					int minTimeToFullHour = 100;
+					List<VirtualMachine> rentedVm = iaas.GetVmList();
+					for(VirtualMachine vm: rentedVm)
 					{
-						int vmRunningDuration = time - vm.start;
-						if (vmRunningDuration%60 == 0)
+						if (vm.end < 0)
 						{
-							vmIdToBeStopped = vm.id;
-							break;
-						}
-						int timeToFullHour = (((vmRunningDuration/60)+1)*60)-vmRunningDuration;
-						if (minTimeToFullHour > timeToFullHour)
-						{
-							minTimeToFullHour = timeToFullHour;
-							vmIdToBeStopped = vm.id;
-						}
-					} 
+							int vmRunningDuration = time - vm.start;
+							if (vmRunningDuration%60 == 0)
+							{
+								vmIdToBeStopped = vm.id;
+								break;
+							}
+							int timeToFullHour = (((vmRunningDuration/60)+1)*60)-vmRunningDuration;
+							if (minTimeToFullHour > timeToFullHour)
+							{
+								minTimeToFullHour = timeToFullHour;
+								vmIdToBeStopped = vm.id;
+							}
+						} 
+					}
+					iaas.ScaleDown(vmIdToBeStopped, time);
+					ScalingTimerSet(i);
 				}
-				infrastructure.scaleDown(vmIdToBeStopped, time);
-				ScalingTimerSet();
-			}
-			else if (load > ceilingCapacity)
-			{
-				infrastructure.scaleUp(time);
-				ScalingTimerSet();
-				//test
+				else if (workload > ceilingCapacity)
+				{
+					iaas.ScaleUp(time);
+					ScalingTimerSet(i);
+				}
 			}
 		}
-
 		return;
 	}
+
+	public void ScalingTimerSet(int i) {
+		for(FreezingInfo inf : freezingFlags)
+		{
+			if (inf.number == i)
+			{
+				inf.status = true;
+				inf.duration = app.GetTier(i).GetIaaS().GetVmBootUpTime();
+			}
+		}
+	}
+	
+	protected  void ScalingTimerTick()
+	{
+		for(FreezingInfo inf: freezingFlags)
+		{
+			inf.duration -= Simulator.monitoringInterval;
+			if (inf.duration < 0)
+			{
+				inf.status = false;
+			}
+		}
+	}		
 }

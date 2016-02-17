@@ -2,8 +2,11 @@ package Application;
 import java.util.ArrayList;
 import java.util.List;
 
+import Common.IaaS;
+
 
 public class Application {
+	public static double responseTimeThreshold = 6.0;
 	private List<SoftwareTier> tiers = new ArrayList<SoftwareTier>();
 	private int tierCount = 0;
 	
@@ -17,6 +20,25 @@ public class Application {
 	{
 		return tierCount; 
 	}
+	
+	public List<SoftwareTier> GetTiers()
+	{
+		return tiers; 
+	}
+	
+	public SoftwareTier GetTier(int num)
+	{
+		SoftwareTier res = new SoftwareTier("null", 0.0, 0.0, new IaaS(0, 0.0), 0); 
+		for(SoftwareTier st : tiers)
+		{
+			if (st.GetNumber() == num)
+			{
+				res = st;
+			}
+		}
+		return res;
+	}
+	
 	public double GetResponseTime(double load)
 	{
 		double responseTime = 0.0;
