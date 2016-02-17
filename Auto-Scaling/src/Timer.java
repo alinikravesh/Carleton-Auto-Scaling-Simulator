@@ -1,5 +1,7 @@
 import java.io.IOException;
 
+import Application.Application;
+
 //Emulates universal timer
 public class Timer {
 	private int currentTime = 0;

@@ -1,5 +1,7 @@
 import java.util.List;
 
+import Application.Application;
+
 public class ThresholdBasedDecisionMaker extends DecisionMaker{ 
 	
 	public void GenerateScalingAction(double load, int time, Application app)

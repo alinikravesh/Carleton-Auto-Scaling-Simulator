@@ -1,3 +1,4 @@
+import Application.Application;
 
 public abstract class DecisionMaker extends InfrastructurePropertires{
 	protected boolean freezFlag = false;
