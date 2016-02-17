@@ -1,6 +1,8 @@
+package ScalingUnit;
 import java.util.List;
 
 import Application.Application;
+import Common.VirtualMachine;
 
 public class ThresholdBasedDecisionMaker extends DecisionMaker{ 
 	

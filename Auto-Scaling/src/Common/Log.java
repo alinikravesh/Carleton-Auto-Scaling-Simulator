@@ -1,3 +1,4 @@
+package Common;
 
 public class Log {
 	public int time;

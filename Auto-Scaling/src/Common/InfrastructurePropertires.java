@@ -1,3 +1,4 @@
+package Common;
 //Sets infrastructural variables
 public class InfrastructurePropertires {
 	protected static int appLayerVmBootUpTime = 10; //Boot-up time of application layer VMs

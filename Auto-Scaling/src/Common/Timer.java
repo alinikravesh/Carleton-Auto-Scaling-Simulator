@@ -1,6 +1,8 @@
+package Common;
 import java.io.IOException;
 
 import Application.Application;
+import ScalingUnit.DecisionMaker;
 
 //Emulates universal timer
 public class Timer {

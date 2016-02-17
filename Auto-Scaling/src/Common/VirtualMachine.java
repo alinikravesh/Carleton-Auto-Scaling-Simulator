@@ -1,3 +1,4 @@
+package Common;
 
 public class VirtualMachine {
 	public int id; 

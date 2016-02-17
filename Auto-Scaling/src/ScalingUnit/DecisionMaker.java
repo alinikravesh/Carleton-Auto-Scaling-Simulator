@@ -1,4 +1,6 @@
+package ScalingUnit;
 import Application.Application;
+import Common.InfrastructurePropertires;
 
 public abstract class DecisionMaker extends InfrastructurePropertires{
 	protected boolean freezFlag = false;
