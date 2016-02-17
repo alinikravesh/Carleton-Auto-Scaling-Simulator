@@ -1,76 +1,57 @@
 package Application;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
-import Common.IaaS;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Application {
-	public double businessTierServiceDemand;
-	public double databaseTierServiceDemand; 
-	private IaaS businessTierIaas;
-	private IaaS databaseTierIaas; 
-	private double databaseAccessRate;
+	private List<SoftwareTier> tiers = new ArrayList<SoftwareTier>();
+	private int tierCount = 0;
 	
-	public Application(IaaS biaas, IaaS diaas, double bServDemand, double dServDemand, double dbAccessrate){
-		businessTierIaas = biaas;
-		databaseTierIaas = diaas;
-		businessTierServiceDemand = bServDemand;
-		databaseTierServiceDemand = dServDemand;
-		databaseAccessRate = dbAccessrate;
+	public void AddTier(SoftwareTier st)
+	{
+		tiers.add(st);
+		tierCount++;
 	}
 	
+	public int GetTierCount()
+	{
+		return tierCount; 
+	}
 	public double GetResponseTime(double load)
 	{
 		double responseTime = 0.0;
-		double businessWorkload = load / businessTierIaas.GetNumberOfUpVms();
-		double databaseWorkload = (load * databaseAccessRate) / databaseTierIaas.GetNumberOfUpVms();
-		responseTime = ((businessTierServiceDemand/(1-businessTierServiceDemand*businessWorkload)) + 
-				(databaseTierServiceDemand/(1-databaseTierServiceDemand*databaseWorkload)));
-		BigDecimal tmp = new BigDecimal(responseTime);
-		tmp = tmp.setScale(2, RoundingMode.HALF_UP);
-		responseTime = tmp.doubleValue();
+		for(SoftwareTier st : tiers)
+		{
+			responseTime += st.GetResponseTime(load);
+		}
 		return responseTime;
 	}
 	
 	public void EndExperiment(int duration)
 	{
-		businessTierIaas.EndExperiment(duration);
-		databaseTierIaas.EndExperiment(duration);
+		for(SoftwareTier st: tiers)
+		{
+			st.EndExperiment(duration);
+		}
 	}
 	
 	public int GetOperationalCost()
 	{
-		return businessTierIaas.GetOperationalCost() + databaseTierIaas.GetOperationalCost();
+		int cost = 0;
+		for(SoftwareTier st: tiers)
+		{
+			cost += st.GetOperationalCost();
+		}
+		return cost;
 	}
 	
 	public int GetVmThrashing()
 	{
-		return businessTierIaas.GetVmThrashing() + databaseTierIaas.GetVmThrashing();
-	}
-	
-	public IaaS GetBtIaaS()
-	{
-		return this.businessTierIaas;
-	}
-	
-	public IaaS GetDtIaaS()
-	{
-		return this.databaseTierIaas;
-	}
-	
-	public double GetBussServDemand()
-	{
-		return businessTierServiceDemand;
-	}
-	
-	public double GetDbServDemand()
-	{
-		return databaseTierServiceDemand;
-	}
-	
-	public double GetDbAccessRate()
-	{
-		return databaseAccessRate;
+		int thrashing = 0;
+		for(SoftwareTier st: tiers)
+		{
+			thrashing += st.GetVmThrashing();
+		}
+		return thrashing;
 	}
 }
