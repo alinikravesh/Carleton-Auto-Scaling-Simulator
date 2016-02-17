@@ -71,28 +71,28 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 							}
 						} 
 					}
-//					if (st.GetName().startsWith("Bu"))
-//						System.out.println("Time: "+time+" Layer:"+st.GetName()+" -1");
+					if (st.GetName().startsWith("Bu"))
+						System.out.println("Time: "+time+" Layer:"+st.GetName()+" -1");
 					iaas.ScaleDown(vmIdToBeStopped, time);
 					ScalingTimerSet(i);
 				}
 				else if (workload > ceilingCapacity)
 				{
-//					if (st.GetName().startsWith("Bu"))
-//						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 1");
+					if (st.GetName().startsWith("Bu"))
+						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 1");
 					iaas.ScaleUp(time);
 					ScalingTimerSet(i);
 				}
 				else
 				{
-//					if (st.GetName().startsWith("Bu"))
-//						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
+					if (st.GetName().startsWith("Bu"))
+						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
 				}
 			}
 			else
 			{
-//				if (st.GetName().startsWith("Bu"))
-//					System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
+				if (st.GetName().startsWith("Bu"))
+					System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
 			}
 		}
 		return;
