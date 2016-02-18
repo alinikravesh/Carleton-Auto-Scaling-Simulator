@@ -18,7 +18,7 @@ public class Simulator{
 		SoftwareTier bt = new SoftwareTier("BusinessTier", btServDem, btAccessR, biaas, 0);
 
 		//create database tier
-		double dtServDem = 0.0001;
+		double dtServDem = 0.076;
 		double dtAccessR = 0.7;
 		int dtVmBt = 15;
 		IaaS diaas = new IaaS(dtVmBt, dtServDem);
@@ -27,7 +27,7 @@ public class Simulator{
 		//create application
 		Application app = new Application();
 		app.AddTier(bt);
-		app.AddTier(dt);
+//		app.AddTier(dt);
 		
 		//create monitor
 		Monitor monitor = new Monitor();
