@@ -48,6 +48,8 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 				double ceilingCapacity = (double)iaas.GetCurrentCapacity();
 				double floorCapacity = (double)iaas.GetCapacityAfterScaleDown();
 				double workload = load * st.GetAccessRate();
+				if (st.GetName() == "DatabaseTier")
+					System.out.println("time:"+time+":load:"+workload+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
 				if (floorCapacity > workload)
 				{
 					int vmIdToBeStopped = -1;
@@ -71,28 +73,30 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 							}
 						} 
 					}
-					if (st.GetName().startsWith("Bu"))
-						System.out.println("Time: "+time+" Layer:"+st.GetName()+" -1");
+//					if (st.GetName().startsWith("Bu"))
+//						System.out.println("Time: "+time+" Layer:"+st.GetName()+" -1");
+//					System.out.println(st.GetName() +"D");
 					iaas.ScaleDown(vmIdToBeStopped, time);
 					ScalingTimerSet(i);
 				}
 				else if (workload > ceilingCapacity)
 				{
-					if (st.GetName().startsWith("Bu"))
-						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 1");
+//					if (st.GetName().startsWith("Bu"))
+//						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 1");
+//					System.out.println(st.GetName() +"U");
 					iaas.ScaleUp(time);
 					ScalingTimerSet(i);
 				}
 				else
 				{
-					if (st.GetName().startsWith("Bu"))
-						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
+//					if (st.GetName().startsWith("Bu"))
+//						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
 				}
 			}
 			else
 			{
-				if (st.GetName().startsWith("Bu"))
-					System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
+//				if (st.GetName().startsWith("Bu"))
+//					System.out.println("Time: "+time+" Layer:"+st.GetName()+" 0");
 			}
 		}
 		return;

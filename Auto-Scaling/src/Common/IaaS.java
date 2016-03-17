@@ -123,13 +123,15 @@ public class IaaS{
 	public int GetCurrentCapacity()
 	{
 		int capacity = 0;
-		for(VirtualMachine vm : rentedVM)
-		{
-			if ((vm.status == 1) && (vm.end < 0)) 
-			{
-				capacity += vmCap;	
-			}
-		}
+//		for(VirtualMachine vm : rentedVM)
+//		{
+//			if ((vm.status == 1) && (vm.end < 0)) 
+//			{
+//				capacity += vmCap;	
+//			}
+//		}
+		int num = GetNumberOfUpVms(); 
+		capacity = num * vmCap;
 		this.capacity = capacity;
 		return capacity;
 	}
@@ -144,7 +146,7 @@ public class IaaS{
 		int res = 0;
 		for(VirtualMachine vm : rentedVM)
 		{
-			if ((vm.status == 1) && (vm.end == -1))
+			if ((vm.status == 1) && (vm.end < 0))
 			{
 				res++;
 			}
