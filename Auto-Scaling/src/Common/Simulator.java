@@ -3,6 +3,7 @@ import java.io.IOException;
 
 import Application.Application;
 import Application.SoftwareTier;
+import ScalingUnit.AmazonDecisionMaker;
 import ScalingUnit.ThresholdBasedDecisionMaker;
 
 public class Simulator{
@@ -34,7 +35,8 @@ public class Simulator{
 		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\CyclicWorkload.xls");
 		
 		//create decision maker
-		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);
+//		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);
+		ScalingUnitInterface decisionMaker = new AmazonDecisionMaker(60.0,100.0,app);
 		
 		//create timer and start the simulation
 		Timer timer = new Timer(monitoringInterval, monitor, decisionMaker, app);
@@ -47,8 +49,8 @@ public class Simulator{
 		app.EndExperiment(monitor.GetExperimentDuration()*monitoringInterval);
 		
 		//print simulation reports
-//		System.out.println("Operational Cost: "+Integer.toString(app.GetOperationalCost()));
-//		System.out.println("VM Thrashing: " + Integer.toString(app.GetVmThrashing()));
+		System.out.println("Operational Cost: "+Integer.toString(app.GetOperationalCost()));
+		System.out.println("VM Thrashing: " + Integer.toString(app.GetVmThrashing()));
 		System.out.println("SLA Violation Count: "+ Integer.toString(timer.GetSlaViolationCount()));
 	}
 }
