@@ -14,6 +14,8 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 	private List<FreezingInfo> freezingFlags = new ArrayList<FreezingInfo>();
 	private Application app = new Application();
 	
+	double ceilingCapacity = 0;
+	double floorCapacity = -20;
 	public ThresholdBasedDecisionMaker(Application appl) {
 		app = appl;
 		tierCount = app.GetTierCount();
@@ -38,17 +40,18 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 	
 	public void GenerateScalingAction(double load, int time, Application app)
 	{
-		ScalingTimerTick();		
+		ScalingTimerTick();	
+		//System.out.println("time:"+time+":load:"+load+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
 		for(int i=0; i<app.GetTierCount(); i++)
 		{
 			SoftwareTier st = app.GetTier(i);
 			if (!GetStatus(i))
 			{
 				IaaS iaas = st.GetIaaS();
-				double ceilingCapacity = (double)iaas.GetCurrentCapacity();
-				double floorCapacity = (double)iaas.GetCapacityAfterScaleDown();
+				ceilingCapacity = (double)iaas.GetCurrentCapacity();
+				floorCapacity = (double)iaas.GetCapacityAfterScaleDown();
 				double workload = load * st.GetAccessRate();
-				if (st.GetName() == "DatabaseTier")
+				if (st.GetName() == "BusinessTier")
 					System.out.println("time:"+time+":load:"+workload+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
 				if (floorCapacity > workload)
 				{

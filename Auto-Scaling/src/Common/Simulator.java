@@ -28,15 +28,15 @@ public class Simulator{
 		//create application
 		Application app = new Application();
 		app.AddTier(bt);
-		app.AddTier(dt);
+//		app.AddTier(dt);
 		
 		//create monitor
 		Monitor monitor = new Monitor();
-		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\CyclicWorkload.xls");
+		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
 		
 		//create decision maker
-//		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);
-		ScalingUnitInterface decisionMaker = new AmazonDecisionMaker(60.0,100.0,app);
+		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);
+//		ScalingUnitInterface decisionMaker = new AmazonDecisionMaker(60.0,100.0,app);
 		
 		//create timer and start the simulation
 		Timer timer = new Timer(monitoringInterval, monitor, decisionMaker, app);
