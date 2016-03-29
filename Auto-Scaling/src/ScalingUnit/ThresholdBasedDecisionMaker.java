@@ -111,7 +111,8 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 			if (inf.number == i)
 			{
 				inf.status = true;
-				inf.duration = app.GetTier(i).GetIaaS().GetVmBootUpTime();
+//				inf.duration = app.GetTier(i).GetIaaS().GetVmBootUpTime();
+				inf.duration = 0;
 			}
 		}
 	}

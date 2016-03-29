@@ -12,6 +12,7 @@ public class Timer {
 	private ScalingUnitInterface decisionMaker;
 	private Application app;
 	private int slaViolationCount;
+	private int excessiveOperationalCost = 0;
 	
 	//Constructor
 	public Timer(int inter, Monitor mon, ScalingUnitInterface dm, Application app) 
@@ -46,6 +47,11 @@ public class Timer {
 			{
 				slaViolationCount++;
 			}
+			
+			if (app.GetResponseTimeFloor(load) < Application.responseTimeThreshold)
+			{
+				excessiveOperationalCost++;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -55,6 +61,11 @@ public class Timer {
 	public int GetSlaViolationCount()
 	{
 		return slaViolationCount;
+	}
+	
+	public int GetExcessiveOperationalCost()
+	{
+		return excessiveOperationalCost;
 	}
 }
 

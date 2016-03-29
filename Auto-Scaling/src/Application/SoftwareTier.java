@@ -59,6 +59,19 @@ public class SoftwareTier {
 		return responseTime;
 	}
 	
+	public double GetResponseTimeFloor(double load)
+	{
+		double responseTime = 0.0;
+		double Workload = (load * accessRate)/(iaas.GetNumberOfUpVms() - 1);
+		responseTime = serviceDemand/(1-serviceDemand*Workload); 
+		BigDecimal tmp = new BigDecimal(responseTime);
+		tmp = tmp.setScale(2, RoundingMode.HALF_UP);
+		responseTime = tmp.doubleValue();
+		if (responseTime < 0)
+			responseTime = 100;
+		return responseTime;
+	}
+	
 	public void EndExperiment(int duration)
 	{
 		iaas.EndExperiment(duration);

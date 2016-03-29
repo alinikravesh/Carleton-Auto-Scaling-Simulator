@@ -49,6 +49,16 @@ public class Application {
 		return responseTime;
 	}
 	
+	public double GetResponseTimeFloor(double load)
+	{
+		double responseTime = 0.0;
+		for(SoftwareTier st : tiers)
+		{
+			responseTime += st.GetResponseTimeFloor(load);
+		}
+		return responseTime;
+	}
+	
 	public void EndExperiment(int duration)
 	{
 		for(SoftwareTier st: tiers)

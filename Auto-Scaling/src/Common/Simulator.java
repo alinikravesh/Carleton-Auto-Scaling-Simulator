@@ -32,7 +32,8 @@ public class Simulator{
 		
 		//create monitor
 		Monitor monitor = new Monitor();
-		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
+		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/UnpredictableWorkload.xls");
+//		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
 		
 		//create decision maker
 		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);
@@ -52,5 +53,6 @@ public class Simulator{
 		System.out.println("Operational Cost: "+Integer.toString(app.GetOperationalCost()));
 		System.out.println("VM Thrashing: " + Integer.toString(app.GetVmThrashing()));
 		System.out.println("SLA Violation Count: "+ Integer.toString(timer.GetSlaViolationCount()));
+		System.out.println("Excessive Operational Cost: "+ Integer.toString(timer.GetExcessiveOperationalCost()));
 	}
 }
