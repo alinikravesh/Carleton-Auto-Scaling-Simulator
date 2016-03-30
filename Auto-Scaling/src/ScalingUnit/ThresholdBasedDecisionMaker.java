@@ -16,6 +16,7 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 	
 	double ceilingCapacity = 0;
 	double floorCapacity = -20;
+	int margin = 4;
 	public ThresholdBasedDecisionMaker(Application appl) {
 		app = appl;
 		tierCount = app.GetTierCount();
@@ -53,7 +54,7 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 				double workload = load * st.GetAccessRate();
 				if (st.GetName() == "BusinessTier")
 					System.out.println("time:"+time+":load:"+workload+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
-				if (floorCapacity > workload)
+				if (floorCapacity -margin > workload)
 				{
 					int vmIdToBeStopped = -1;
 					int minTimeToFullHour = 100;
@@ -82,7 +83,7 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 					iaas.ScaleDown(vmIdToBeStopped, time);
 					ScalingTimerSet(i);
 				}
-				else if (workload > ceilingCapacity)
+				else if (workload > ceilingCapacity -margin)
 				{
 //					if (st.GetName().startsWith("Bu"))
 //						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 1");

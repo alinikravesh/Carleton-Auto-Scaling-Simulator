@@ -28,12 +28,14 @@ public class Simulator{
 		//create application
 		Application app = new Application();
 		app.AddTier(bt);
-//		app.AddTier(dt);
+		app.AddTier(dt);
 		
 		//create monitor
 		Monitor monitor = new Monitor();
-		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/UnpredictableWorkload.xls");
-//		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
+		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/cyclicWorkload.xls");
+//		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/growingWorkload.xls");
+//		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/unpredictableWorkload.xls");
+		//		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
 		
 		//create decision maker
 		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);

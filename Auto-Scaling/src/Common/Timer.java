@@ -42,9 +42,10 @@ public class Timer {
 				st.GetIaaS().Tick(currentTime);	
 			}
 //			if (currentTime == 2395)
-//			System.out.println(currentTime);
+//			System.out.println(currentTime + ":" + app.GetResponseTime(load));
 			if (app.GetResponseTime(load) > Application.responseTimeThreshold)
 			{
+//				System.out.println(currentTime);
 				slaViolationCount++;
 			}
 			
