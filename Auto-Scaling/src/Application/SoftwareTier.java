@@ -62,13 +62,21 @@ public class SoftwareTier {
 	public double GetResponseTimeFloor(double load)
 	{
 		double responseTime = 0.0;
-		double Workload = (load * accessRate)/(iaas.GetNumberOfUpVms() - 1);
+		double Workload = 0.0;
+		if (iaas.GetNumberOfUpVms() > 1)
+		{
+			Workload = (load * accessRate)/(iaas.GetNumberOfUpVms() - 1);	
+		}
+		else
+		{
+			Workload = (load * accessRate)/(iaas.GetNumberOfUpVms());
+		}
 		responseTime = serviceDemand/(1-serviceDemand*Workload); 
 		BigDecimal tmp = new BigDecimal(responseTime);
 		tmp = tmp.setScale(2, RoundingMode.HALF_UP);
 		responseTime = tmp.doubleValue();
 		if (responseTime < 0)
-			responseTime = 100;
+			responseTime = GetResponseTime(load);
 		return responseTime;
 	}
 	
@@ -80,6 +88,11 @@ public class SoftwareTier {
 	public int GetOperationalCost()
 	{
 		return iaas.GetOperationalCost();
+	}
+	
+	public int GetVmCount(int s, int e)
+	{
+		return iaas.hourVmGet(s, e);
 	}
 	
 	public int GetVmThrashing()

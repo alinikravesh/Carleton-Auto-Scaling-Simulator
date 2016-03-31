@@ -168,6 +168,7 @@ public class IaaS{
 		int cost = 0;
 		for(VirtualMachine vm: rentedVM)
 		{
+			System.out.println("VmId:" + vm.id + ":VmStart:" + vm.start + ":VmEnd:" + vm.end);
 			int runningMinutes = vm.end - vm.start;
 			int runningHours = 0;
 			if (runningMinutes%60 == 0)
@@ -182,6 +183,19 @@ public class IaaS{
 		}
 		
 		return cost;
+	}
+	
+	public int hourVmGet(int s, int e)
+	{
+		int vmCount = 0;
+		for(VirtualMachine vm: rentedVM)
+		{
+			if ((vm.start <=e) && (vm.end >= s))
+			{
+				vmCount++;
+			}
+		}
+		return vmCount;
 	}
 	
 	public void EndExperiment(int duration)

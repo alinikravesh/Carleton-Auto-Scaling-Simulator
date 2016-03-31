@@ -77,6 +77,18 @@ public class Application {
 		return cost;
 	}
 	
+	public void PirntVmHour(int duration)
+	{
+		for(SoftwareTier st: tiers)
+		{
+			System.out.println(st.GetName());
+			for (int s=0; s< duration; s+=60)
+			{
+				System.out.println("start:"+s+":end:"+(s+60)+":count:"+st.GetVmCount(s, s+60));
+			}
+		}
+	}
+	
 	public int GetVmThrashing()
 	{
 		int thrashing = 0;

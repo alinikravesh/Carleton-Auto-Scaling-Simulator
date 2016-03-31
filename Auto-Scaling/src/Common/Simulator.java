@@ -1,10 +1,13 @@
 package Common;
 import java.io.IOException;
 
+import javax.xml.datatype.Duration;
+
 import Application.Application;
 import Application.SoftwareTier;
 import ScalingUnit.AmazonDecisionMaker;
 import ScalingUnit.ThresholdBasedDecisionMaker;
+import ScalingUnit.ThresholdBasedFullHour;
 
 public class Simulator{
 	public static int monitoringInterval = 5;
@@ -28,17 +31,21 @@ public class Simulator{
 		//create application
 		Application app = new Application();
 		app.AddTier(bt);
-		app.AddTier(dt);
+//		app.AddTier(dt);
 		
 		//create monitor
 		Monitor monitor = new Monitor();
-		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/cyclicWorkload.xls");
+//		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/cyclicWorkload.xls");
 //		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/growingWorkload.xls");
 //		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/unpredictableWorkload.xls");
-		//		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
+
+//		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\cyclicWorkload.xls");
+//		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\growingWorkload.xls");
+		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
 		
 		//create decision maker
-		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);
+		ScalingUnitInterface decisionMaker = new ThresholdBasedFullHour(app);
+//		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);
 //		ScalingUnitInterface decisionMaker = new AmazonDecisionMaker(60.0,100.0,app);
 		
 		//create timer and start the simulation
@@ -53,7 +60,9 @@ public class Simulator{
 		
 		//print simulation reports
 		System.out.println("Operational Cost: "+Integer.toString(app.GetOperationalCost()));
-		System.out.println("VM Thrashing: " + Integer.toString(app.GetVmThrashing()));
+		app.PirntVmHour(monitor.GetExperimentDuration()*monitoringInterval);
+		
+//		System.out.println("VM Thrashing: " + Integer.toString(app.GetVmThrashing()));
 		System.out.println("SLA Violation Count: "+ Integer.toString(timer.GetSlaViolationCount()));
 		System.out.println("Excessive Operational Cost: "+ Integer.toString(timer.GetExcessiveOperationalCost()));
 	}

@@ -16,13 +16,21 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 	
 	double ceilingCapacity = 0;
 	double floorCapacity = -20;
-	int margin = 4;
+	int margin = 0;
+	private List<FreezingInfo> vUp = new ArrayList<FreezingInfo>();
+	private List<FreezingInfo> vDown = new ArrayList<FreezingInfo>();
+	int vUpDuration = 20;
+	int vDownDuration = 0;
+	
+
 	public ThresholdBasedDecisionMaker(Application appl) {
 		app = appl;
 		tierCount = app.GetTierCount();
 		for (int i=0; i<tierCount; i++)
 		{
 			freezingFlags.add(new FreezingInfo(i, false, app.GetTier(i).GetIaaS().GetVmBootUpTime()));
+			vUp.add(new FreezingInfo(i, false, vUpDuration));
+			vDown.add(new FreezingInfo(i, false, vDownDuration));
 		}
 	}
 	
@@ -53,7 +61,9 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 				floorCapacity = (double)iaas.GetCapacityAfterScaleDown();
 				double workload = load * st.GetAccessRate();
 				if (st.GetName() == "BusinessTier")
-					System.out.println("time:"+time+":load:"+workload+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
+				{
+//					System.out.println("time:"+time+":load:"+workload+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
+				}
 				if (floorCapacity -margin > workload)
 				{
 					int vmIdToBeStopped = -1;
@@ -80,16 +90,27 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 //					if (st.GetName().startsWith("Bu"))
 //						System.out.println("Time: "+time+" Layer:"+st.GetName()+" -1");
 //					System.out.println(st.GetName() +"D");
-					iaas.ScaleDown(vmIdToBeStopped, time);
-					ScalingTimerSet(i);
+					vDownTick(i);
+					if (vDownGetStatus(i))
+					{
+						iaas.ScaleDown(vmIdToBeStopped, time);
+						ScalingTimerSet(i);
+						vDownSet(i);
+					}
+					
 				}
 				else if (workload > ceilingCapacity -margin)
 				{
 //					if (st.GetName().startsWith("Bu"))
 //						System.out.println("Time: "+time+" Layer:"+st.GetName()+" 1");
 //					System.out.println(st.GetName() +"U");
-					iaas.ScaleUp(time);
-					ScalingTimerSet(i);
+					vUpTick(i);
+					if (vUpGetStatus(i))
+					{
+						iaas.ScaleUp(time);
+						ScalingTimerSet(i);
+						vUpSet(i);
+					}
 				}
 				else
 				{
@@ -106,6 +127,30 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 		return;
 	}
 
+	private boolean vDownGetStatus(int i) {
+		boolean res = false; 
+		for(FreezingInfo inf: vDown)
+		{
+			if (inf.number == i)
+			{
+				res = inf.status;
+			}
+		}
+		return res;
+	}
+	
+	private boolean vUpGetStatus(int i) {
+		boolean res = false; 
+		for(FreezingInfo inf: vUp)
+		{
+			if (inf.number == i)
+			{
+				res = inf.status;
+			}
+		}
+		return res;
+	}
+
 	public void ScalingTimerSet(int i) {
 		for(FreezingInfo inf : freezingFlags)
 		{
@@ -114,6 +159,30 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 				inf.status = true;
 //				inf.duration = app.GetTier(i).GetIaaS().GetVmBootUpTime();
 				inf.duration = 0;
+			}
+		}
+	}
+	
+	public void vUpSet(int i) {
+		for(FreezingInfo inf : vUp)
+		{
+			if (inf.number == i)
+			{
+				inf.status = false;
+//				inf.duration = app.GetTier(i).GetIaaS().GetVmBootUpTime();
+				inf.duration = vUpDuration;
+			}
+		}
+	}
+	
+	public void vDownSet(int i) {
+		for(FreezingInfo inf : vDown)
+		{
+			if (inf.number == i)
+			{
+				inf.status = false;
+//				inf.duration = app.GetTier(i).GetIaaS().GetVmBootUpTime();
+				inf.duration = vDownDuration;
 			}
 		}
 	}
@@ -128,5 +197,35 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 				inf.status = false;
 			}
 		}
-	}		
+	}	
+	protected  void vUpTick(int i)
+	{
+		for(FreezingInfo inf: vUp)
+		{
+			if (inf.number == i)
+			{
+				inf.duration -= Simulator.monitoringInterval;
+				if (inf.duration < 0)
+				{
+					inf.status = true;
+				}
+			}
+			
+		}
+	}	
+	protected  void vDownTick(int i)
+	{
+		for(FreezingInfo inf: vDown)
+		{
+			if (inf.number == i)
+			{
+				inf.duration -= Simulator.monitoringInterval;
+				if (inf.duration < 0)
+				{
+					inf.status = true;
+				}
+			}
+			
+		}
+	}	
 }

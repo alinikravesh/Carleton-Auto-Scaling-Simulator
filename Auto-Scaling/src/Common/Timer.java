@@ -49,9 +49,14 @@ public class Timer {
 				slaViolationCount++;
 			}
 			
+//			System.out.println(currentTime + ":" + app.GetResponseTimeFloor(load) + ":" + app.GetResponseTime(load) + ":" + Application.responseTimeThreshold);
 			if (app.GetResponseTimeFloor(load) < Application.responseTimeThreshold)
 			{
-				excessiveOperationalCost++;
+				if (app.GetResponseTimeFloor(load) != app.GetResponseTime(load))
+				{
+					excessiveOperationalCost++;
+							
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
