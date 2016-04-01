@@ -94,11 +94,15 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 					vDownTick(i);
 					if (vDownGetStatus(i))
 					{
-						if (vmIdToBeStopped > 0)
+						if (vmIdToBeStopped >= 0)
 						{
 							iaas.ScaleDown(vmIdToBeStopped, time);
 							ScalingTimerSet(i);
 							vDownSet(i);
+						}
+						else
+						{
+//							System.out.println("failed time:"+time);
 						}
 					}
 					

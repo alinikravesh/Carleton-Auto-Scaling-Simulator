@@ -19,7 +19,7 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 	int margin = 0;
 	private List<FreezingInfo> vUp = new ArrayList<FreezingInfo>();
 	private List<FreezingInfo> vDown = new ArrayList<FreezingInfo>();
-	int vUpDuration = 20;
+	int vUpDuration = 0;
 	int vDownDuration = 0;
 	
 
