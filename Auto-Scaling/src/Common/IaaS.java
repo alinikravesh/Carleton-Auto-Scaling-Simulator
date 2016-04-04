@@ -9,17 +9,18 @@ public class IaaS{
 	private List<Integer> vmIds = new ArrayList<Integer>(); //List of current VM IDs that are up and running
 	private int currentVmCount = 0;
 	private List<Log> spool = new ArrayList<Log>(); //List of VMs that are started but are not operational yet
-	private int capacity; //Current capacity of the IaaS. Capacity refers to the number of requests that VM can handle per minute
+	private double capacity; //Current capacity of the IaaS. Capacity refers to the number of requests that VM can handle per minute
 	private int vmThrashing = 0;
 	private int vmBootUpTime = 0;
-	private int vmCap = 1;
+	private double vmCap = 1;
 	private int margin = 0;
 	//Constructor
 	//Adds one VM to the IaaS environment, because each application needs at least one VM to run. 
 	public IaaS(int vmbt, double sd)
 	{
 		this.vmBootUpTime = vmbt;
-		vmCap = (int)Math.floor(1/sd);
+//		vmCap = (int)Math.floor(1/sd);
+		vmCap = 12.5; 
 		VirtualMachine vm = new VirtualMachine();
 		vm.start = 0;
 		vm.end = -1; //-1 represents that VM is still running
@@ -120,9 +121,9 @@ public class IaaS{
 	}
 	
 	//Calculates current capacity of the IaaS infrastructure
-	public int GetCurrentCapacity()
+	public double GetCurrentCapacity()
 	{
-		int capacity = 0;
+		double capacity = 0;
 //		for(VirtualMachine vm : rentedVM)
 //		{
 //			if ((vm.status == 1) && (vm.end < 0)) 
@@ -155,7 +156,7 @@ public class IaaS{
 	}
 	
 	//Calculates capacity of the IaaS environment in the case of taking scale down action
-	public int GetCapacityAfterScaleDown()
+	public double GetCapacityAfterScaleDown()
 	{
 		if (currentVmCount < 2)
 			return -20;
@@ -168,7 +169,7 @@ public class IaaS{
 		int cost = 0;
 		for(VirtualMachine vm: rentedVM)
 		{
-			System.out.println("VmId:" + vm.id + ":VmStart:" + vm.start + ":VmEnd:" + vm.end);
+//			System.out.println("VmId:" + vm.id + ":VmStart:" + vm.start + ":VmEnd:" + vm.end);
 			int runningMinutes = vm.end - vm.start;
 			int runningHours = 0;
 			if (runningMinutes%60 == 0)

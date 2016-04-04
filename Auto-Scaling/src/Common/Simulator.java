@@ -31,17 +31,17 @@ public class Simulator{
 		//create application
 		Application app = new Application();
 		app.AddTier(bt);
-//		app.AddTier(dt);
+		app.AddTier(dt);
 		
 		//create monitor
 		Monitor monitor = new Monitor();
 //		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/cyclicWorkload.xls");
 //		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/growingWorkload.xls");
-//		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/unpredictableWorkload.xls");
+		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/unpredictableWorkload.xls");
 
 //		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\cyclicWorkload.xls");
 //		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\growingWorkload.xls");
-		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
+//		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
 		
 		//create decision maker
 		ScalingUnitInterface decisionMaker = new ThresholdBasedFullHour(app);
@@ -60,7 +60,7 @@ public class Simulator{
 		
 		//print simulation reports
 		System.out.println("Operational Cost: "+Integer.toString(app.GetOperationalCost()));
-		app.PirntVmHour(monitor.GetExperimentDuration()*monitoringInterval);
+//		app.PirntVmHour(monitor.GetExperimentDuration()*monitoringInterval);
 		
 //		System.out.println("VM Thrashing: " + Integer.toString(app.GetVmThrashing()));
 		System.out.println("SLA Violation Count: "+ Integer.toString(timer.GetSlaViolationCount()));
