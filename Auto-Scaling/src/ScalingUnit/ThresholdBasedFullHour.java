@@ -19,8 +19,12 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 	int margin = 0;
 	private List<FreezingInfo> vUp = new ArrayList<FreezingInfo>();
 	private List<FreezingInfo> vDown = new ArrayList<FreezingInfo>();
+	private List<FreezingInfo> inU = new ArrayList<FreezingInfo>();
+	private List<FreezingInfo> inL = new ArrayList<FreezingInfo>();
 	int vUpDuration = 0;
 	int vDownDuration = 0;
+	int inUDuration = 0;
+	int inLDuration = 25;
 	
 
 	public ThresholdBasedFullHour(Application appl) {
@@ -29,6 +33,8 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 		for (int i=0; i<tierCount; i++)
 		{
 			freezingFlags.add(new FreezingInfo(i, false, app.GetTier(i).GetIaaS().GetVmBootUpTime()));
+			inU.add(new FreezingInfo(i, false, inUDuration));
+			inL.add(new FreezingInfo(i, false, inLDuration));
 			vUp.add(new FreezingInfo(i, false, vUpDuration));
 			vDown.add(new FreezingInfo(i, false, vDownDuration));
 		}
@@ -38,6 +44,32 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 	{
 		boolean res = false; 
 		for(FreezingInfo inf: freezingFlags)
+		{
+			if (inf.number == i)
+			{
+				res = inf.status;
+			}
+		}
+		return res;
+	}
+	
+	private boolean GetInUStatus(int i)
+	{
+		boolean res = false; 
+		for(FreezingInfo inf: inU)
+		{
+			if (inf.number == i)
+			{
+				res = inf.status;
+			}
+		}
+		return res;
+	}
+	
+	private boolean GetInLStatus(int i)
+	{
+		boolean res = false; 
+		for(FreezingInfo inf: inL)
 		{
 			if (inf.number == i)
 			{
@@ -62,9 +94,9 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 				double workload = load * st.GetAccessRate();
 				if (st.GetName() == "BusinessTier")
 				{
-//					System.out.println("time:"+time+":load:"+workload+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
+					System.out.println("time:"+time+":load:"+workload+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
 				}
-				if (floorCapacity -margin > workload)
+				if ((floorCapacity -margin > workload) & !GetInLStatus(i))
 				{
 					vUpSet(i);
 					int vmIdToBeStopped = -1;
@@ -97,6 +129,7 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 						if (vmIdToBeStopped >= 0)
 						{
 							iaas.ScaleDown(vmIdToBeStopped, time);
+							InLSet(i);
 							ScalingTimerSet(i);
 							vDownSet(i);
 						}
@@ -107,7 +140,7 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 					}
 					
 				}
-				else if (workload > ceilingCapacity -margin)
+				else if ((workload > ceilingCapacity -margin) & !GetInUStatus(i))
 				{
 					vDownSet(i);
 //					if (st.GetName().startsWith("Bu"))
@@ -117,6 +150,7 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 					if (vUpGetStatus(i))
 					{
 						iaas.ScaleUp(time);
+						InUSet(i);
 						ScalingTimerSet(i);
 						vUpSet(i);
 					}
@@ -174,6 +208,30 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 		}
 	}
 	
+	public void InUSet(int i) {
+		for(FreezingInfo inf : inU)
+		{
+			if (inf.number == i)
+			{
+				inf.status = true;
+//				inf.duration = app.GetTier(i).GetIaaS().GetVmBootUpTime();
+				inf.duration = inUDuration;
+			}
+		}
+	}
+	
+	public void InLSet(int i) {
+		for(FreezingInfo inf : inL)
+		{
+			if (inf.number == i)
+			{
+				inf.status = true;
+//				inf.duration = app.GetTier(i).GetIaaS().GetVmBootUpTime();
+				inf.duration = inLDuration;
+			}
+		}
+	}
+	
 	public void vUpSet(int i) {
 		for(FreezingInfo inf : vUp)
 		{
@@ -201,6 +259,22 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 	protected  void ScalingTimerTick()
 	{
 		for(FreezingInfo inf: freezingFlags)
+		{
+			inf.duration -= Simulator.monitoringInterval;
+			if (inf.duration < 0)
+			{
+				inf.status = false;
+			}
+		}
+		for(FreezingInfo inf: inU)
+		{
+			inf.duration -= Simulator.monitoringInterval;
+			if (inf.duration < 0)
+			{
+				inf.status = false;
+			}
+		}
+		for(FreezingInfo inf: inL)
 		{
 			inf.duration -= Simulator.monitoringInterval;
 			if (inf.duration < 0)

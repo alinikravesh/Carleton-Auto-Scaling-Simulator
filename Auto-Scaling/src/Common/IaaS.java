@@ -14,6 +14,8 @@ public class IaaS{
 	private int vmBootUpTime = 0;
 	private double vmCap = 1;
 	private int margin = 0;
+	private double capU = 0.0;
+	private double capL = 0.0; 
 	//Constructor
 	//Adds one VM to the IaaS environment, because each application needs at least one VM to run. 
 	public IaaS(int vmbt, double sd)
@@ -132,7 +134,7 @@ public class IaaS{
 //			}
 //		}
 		int num = GetNumberOfUpVms(); 
-		capacity = num * (vmCap-margin);
+		capacity = num * (vmCap-margin - capU);
 		this.capacity = capacity;
 		return capacity;
 	}
@@ -160,7 +162,7 @@ public class IaaS{
 	{
 		if (currentVmCount < 2)
 			return -20;
-		return (capacity - (vmCap +margin));
+		return (capacity + (currentVmCount*capU) - (vmCap +margin - (currentVmCount-1)*capL));
 	}
 	
 	//Calculates operational cost 
