@@ -11,6 +11,16 @@ import ScalingUnit.ThresholdBasedFullHour;
 
 public class Simulator{
 	public static int monitoringInterval = 5;
+	public double btServDem;
+	public double btAccessR;
+	public int btVmBT;
+	public double dtServDem;
+	public double dtAccessR;
+	public int dtVmBt;
+	public String inputFile;
+	
+	public void run()
+	{}
 	
 	public static void main(String[] args) throws IOException
 	{		
