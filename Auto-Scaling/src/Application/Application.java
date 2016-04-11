@@ -28,7 +28,7 @@ public class Application {
 	
 	public SoftwareTier GetTier(int num)
 	{
-		SoftwareTier res = new SoftwareTier("null", 0.0, 0.0, new IaaS(0, 0.0), 0); 
+		SoftwareTier res = new SoftwareTier("null", 0.0, 0.0, new IaaS(0, 0.0, 0, 0), 0); 
 		for(SoftwareTier st : tiers)
 		{
 			if (st.GetNumber() == num)

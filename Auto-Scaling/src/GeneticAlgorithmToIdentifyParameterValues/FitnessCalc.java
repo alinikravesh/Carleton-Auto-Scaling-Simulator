@@ -1,7 +1,9 @@
 package GeneticAlgorithmToIdentifyParameterValues;
 
+import java.io.IOException;
 import java.util.*;
 
+import Common.Simulator;
 public class FitnessCalc {
 
     static byte[] solution = new byte[64];
@@ -39,8 +41,24 @@ public class FitnessCalc {
 //                fitness++;
 //            }
 //        }
-        Random r = new Random();
-        fitness = r.nextDouble()*100;
+//        Random r = new Random();
+//        fitness = r.nextDouble()*100;
+        int thrU = individual.getGene(0);
+        int thrL = individual.getGene(1);
+        int durU = individual.getGene(2);
+        int durL = individual.getGene(3);
+        int inU = individual.getGene(4);
+        int inL = individual.getGene(5);
+        Simulator sm = new Simulator(thrU, thrL, durU, durL, inU, inL);
+        sm.SetVmCost(1);
+        sm.SetSlaCost(1);
+        try{
+        	fitness = sm.run();
+        }
+        catch(Exception e)
+        {
+        	fitness = 0;
+        }
         return fitness;
     }
     

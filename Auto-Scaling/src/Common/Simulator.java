@@ -19,29 +19,48 @@ public class Simulator{
 	public int dtVmBt;
 	public String inputFile;
 	
-	public void run()
-	{}
+	private double vmCost = 1;
+	private double slaViolationCost = 1;
+	private ScalingUnitInterface decisionMaker; 
+	private Application app = new Application();
+	public void SetVmCost(double cost)
+	{
+		vmCost = cost;
+	}
 	
-	public static void main(String[] args) throws IOException
-	{		
-		//create business tier
+	public void SetSlaCost(double cost)
+	{
+		slaViolationCost = cost;
+	}
+	
+	public Simulator(int thrU, int thrL, int durU, int durL, int inU, int inL)
+	{
 		double btServDem = 0.076;
 		double btAccessR = 1.0;
 		int btVmBT = 0;
-		IaaS biaas = new IaaS(btVmBT, btServDem);
+		double thrUd = (double) thrU/100;
+		double thrLd = (double) thrL/100;
+		IaaS biaas = new IaaS(btVmBT, btServDem, thrUd, thrLd);
 		SoftwareTier bt = new SoftwareTier("BusinessTier", btServDem, btAccessR, biaas, 0);
 
 		//create database tier
 		double dtServDem = 0.076;
 		double dtAccessR = 0.7;
 		int dtVmBt = 0;
-		IaaS diaas = new IaaS(dtVmBt, dtServDem);
+		IaaS diaas = new IaaS(dtVmBt, dtServDem, thrUd, thrLd);
 		SoftwareTier dt = new SoftwareTier("DatabaseTier", dtServDem, dtAccessR, diaas, 1);
 		
 		//create application
-		Application app = new Application();
 		app.AddTier(bt);
 		app.AddTier(dt);
+		decisionMaker = new ThresholdBasedFullHour(app, thrU, thrL, durU, durL, inU, inL);
+	}
+	
+//	public static void main(String[] args) throws IOException
+	public double run() throws IOException
+	{		
+		//create business tier
+
 		
 		//create monitor
 		Monitor monitor = new Monitor();
@@ -54,7 +73,7 @@ public class Simulator{
 //		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload.xls");
 		
 		//create decision maker
-		ScalingUnitInterface decisionMaker = new ThresholdBasedFullHour(app);
+//		ScalingUnitInterface decisionMaker = new ThresholdBasedFullHour(app);
 //		ScalingUnitInterface decisionMaker = new ThresholdBasedDecisionMaker(app);
 //		ScalingUnitInterface decisionMaker = new AmazonDecisionMaker(60.0,100.0,app);
 		
@@ -75,5 +94,7 @@ public class Simulator{
 //		System.out.println("VM Thrashing: " + Integer.toString(app.GetVmThrashing()));
 		System.out.println("SLA Violation Count: "+ Integer.toString(timer.GetSlaViolationCount()));
 		System.out.println("Excessive Operational Cost: "+ Integer.toString(timer.GetExcessiveOperationalCost()));
+		double cost = (timer.GetSlaViolationCount() * vmCost) + (app.GetOperationalCost() * slaViolationCost) ;
+		return cost;
 	}
 }

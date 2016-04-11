@@ -9,9 +9,10 @@ public class GA {
 		Population myPop = new Population(30, true);
 //		Population myPop = new Population(30, false);
 		int generationCount = 0;
-		
-		while (!StopCondition())
+		int i = 0;
+		while (i<4)
 		{
+			i++;
 			generationCount++;
 			System.out.println("Generation: " + generationCount + " Fittest: " + myPop.getFittest().getFitness());
 			myPop = Algorithm.evolvePopulation(myPop);

@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Individual {
 
-    // individual format: <thrU, thrL, durU, durL, inU, inL>
+    // individual format: <0.thrU, 1.thrL, 2.durU, 3.durL, 4.inU, 5.inL>
 	// individual constraints: 
 	//		1. LL   <=  thrL
 	//		2. thrL <   thrU	

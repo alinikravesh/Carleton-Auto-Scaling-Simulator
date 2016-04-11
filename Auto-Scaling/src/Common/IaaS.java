@@ -16,13 +16,15 @@ public class IaaS{
 	private int margin = 0;
 	private double capU = 0.0;
 	private double capL = 0.0; 
+	private double thrU;
+	private double thrL;
+	private double serviceDemand;
 	//Constructor
 	//Adds one VM to the IaaS environment, because each application needs at least one VM to run. 
-	public IaaS(int vmbt, double sd)
+	public IaaS(int vmbt, double sd, double thrUd, double thrLd)
 	{
 		this.vmBootUpTime = vmbt;
-//		vmCap = (int)Math.floor(1/sd);
-		vmCap = 12.5; 
+		vmCap = (int)Math.floor(thrU/sd); 
 		VirtualMachine vm = new VirtualMachine();
 		vm.start = 0;
 		vm.end = -1; //-1 represents that VM is still running
@@ -31,6 +33,21 @@ public class IaaS{
 		vmIds.add(0);
 		currentVmCount = 1;
 		rentedVM.add(vm);
+		thrU = thrUd;
+		thrL = thrLd; 
+		serviceDemand = sd;
+	}
+	
+	public double GetCeilingCapacity()
+	{
+		double workload = (thrU*currentVmCount)/(serviceDemand); 
+		return workload;
+	}
+	
+	public double GetFloorCapacity()
+	{
+		double workload = (thrL*currentVmCount)/(serviceDemand); 
+		return workload;
 	}
 	
 	public int GetVmBootUpTime()

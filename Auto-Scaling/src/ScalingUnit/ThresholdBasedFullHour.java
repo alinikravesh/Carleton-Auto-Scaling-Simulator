@@ -24,7 +24,7 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 	int vUpDuration = 0;
 	int vDownDuration = 0;
 	int inUDuration = 0;
-	int inLDuration = 25;
+	int inLDuration = 0;
 	
 
 	public ThresholdBasedFullHour(Application appl) {
@@ -33,6 +33,24 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 		for (int i=0; i<tierCount; i++)
 		{
 			freezingFlags.add(new FreezingInfo(i, false, app.GetTier(i).GetIaaS().GetVmBootUpTime()));
+			inU.add(new FreezingInfo(i, false, inUDuration));
+			inL.add(new FreezingInfo(i, false, inLDuration));
+			vUp.add(new FreezingInfo(i, false, vUpDuration));
+			vDown.add(new FreezingInfo(i, false, vDownDuration));
+		}
+	}
+	
+	public ThresholdBasedFullHour(Application appl, double thrU, double thrLo, int vUpd, int vDownd, int inUd, int inLd)
+	{
+		app = appl;
+		tierCount = app.GetTierCount();
+		for (int i=0; i<tierCount; i++)
+		{
+			freezingFlags.add(new FreezingInfo(i, false, app.GetTier(i).GetIaaS().GetVmBootUpTime()));
+			inUDuration = inUd*Simulator.monitoringInterval;
+			inLDuration = inLd*Simulator.monitoringInterval;
+			vUpDuration = vUpd*Simulator.monitoringInterval;
+			vDownDuration = vDownd*Simulator.monitoringInterval;
 			inU.add(new FreezingInfo(i, false, inUDuration));
 			inL.add(new FreezingInfo(i, false, inLDuration));
 			vUp.add(new FreezingInfo(i, false, vUpDuration));
@@ -89,12 +107,14 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 			if (!GetStatus(i))
 			{
 				IaaS iaas = st.GetIaaS();
-				ceilingCapacity = (double)iaas.GetCurrentCapacity();
-				floorCapacity = (double)iaas.GetCapacityAfterScaleDown();
+//				ceilingCapacity = (double)iaas.GetCurrentCapacity();
+				ceilingCapacity = (double)iaas.GetCeilingCapacity();
+//				floorCapacity = (double)iaas.GetCapacityAfterScaleDown();
+				floorCapacity = (double)iaas.GetFloorCapacity();
 				double workload = load * st.GetAccessRate();
 				if (st.GetName() == "BusinessTier")
 				{
-					System.out.println("time:"+time+":load:"+workload+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
+//					System.out.println("time:"+time+":load:"+workload+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
 				}
 				if ((floorCapacity -margin > workload) & !GetInLStatus(i))
 				{
