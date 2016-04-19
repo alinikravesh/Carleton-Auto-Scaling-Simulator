@@ -33,7 +33,7 @@ public class Population {
         Individual fittest = individuals.get(0);
         // Loop through individuals to find fittest
         for (int i = 0; i < size(); i++) {
-            if (fittest.getFitness() <= getIndividual(i).getFitness()) {
+            if (fittest.getFitness() > getIndividual(i).getFitness()) {
                 fittest = getIndividual(i);
             }
         }
