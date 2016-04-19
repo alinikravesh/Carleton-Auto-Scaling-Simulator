@@ -30,7 +30,8 @@ public class Algorithm {
         }
         // Loop over the population size and create new individuals with
         // crossover
-        for (int i = elitismOffset; i < pop.size(); i+=2) {
+        int size = pop.size();
+        for (int i = elitismOffset; i < size; i+=2) {
             Offspring parents = select(pop); 
 //        	Individual indiv1 = tournamentSelection(pop);
 //            Individual indiv2 = tournamentSelection(pop);

@@ -62,5 +62,15 @@ public class Population {
     {
     	individuals.remove(indiv);
     }
+
+	public void printIndividuals() {
+		
+		for(Individual ind : individuals)
+		{
+			System.out.println("< " + ind.getGene(0) + ", " + ind.getGene(1) + ", " + ind.getGene(2) + ", " + ind.getGene(3) + ", " + ind.getGene(4) + ", " + ind.getGene(5)+ ">");
+		}
+		
+	}
+
 }
 
