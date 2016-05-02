@@ -6,7 +6,7 @@ public class Algorithm {
 
     /* GA parameters */
     private static final double uniformRate = 0.5;
-    private static final double mutationRate = 0.015;
+    private static final double mutationRate = 0.13;
     private static final int tournamentSize = 5;
     private static final boolean elitism = true;
 
@@ -31,6 +31,8 @@ public class Algorithm {
         // Loop over the population size and create new individuals with
         // crossover
         int size = pop.size();
+        double crossoverRate =1; 
+        size = (int) ((int) size * crossoverRate);
         for (int i = elitismOffset; i < size; i+=2) {
             Offspring parents = select(pop); 
 //        	Individual indiv1 = tournamentSelection(pop);
@@ -39,6 +41,17 @@ public class Algorithm {
             newPopulation.saveIndividual(i, newOffsprings.offspring1);
             newPopulation.saveIndividual(i+1, newOffsprings.offspring2);
         }
+        
+        int g = newPopulation.size();
+        
+        while (pop.size() > 0)
+        {
+        	Individual parent1 = pop.getFittest(); 
+        	pop.remove(parent1); 
+        	newPopulation.saveIndividual(g, parent1);
+        	g++;
+        }
+
 
         // Mutate population
         for (int i = elitismOffset; i < newPopulation.size(); i++) {
