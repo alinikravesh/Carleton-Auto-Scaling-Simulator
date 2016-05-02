@@ -19,8 +19,8 @@ public class Simulator{
 	public int dtVmBt;
 	public String inputFile;
 	
-	private double vmCost = 1;
-	private double slaViolationCost = 1;
+	private static double vmCost = 1.0;
+	private static double slaViolationCost = 5.0;
 	private ScalingUnitInterface decisionMaker; 
 	private Application app = new Application();
 	private int pthrU;
@@ -76,13 +76,13 @@ public class Simulator{
 		
 		//create monitor
 		Monitor monitor = new Monitor();
-//		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/cyclicWorkload_Experiment.xls");
+		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/cyclicWorkload_Experiment.xls");
 //		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/growingWorkload_Experiment.xls");
 //		monitor.SetInputFile("/Users/Ali/Dropbox/MyPersonalFolder/University/Simulation/unpredictableWorkload_Experiment.xls");
 
 //		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\cyclicWorkload_Experiment.xls");
 //		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\growingWorkload_Experiment.xls");
-		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload_Experiment.xls");
+//		monitor.SetInputFile("C:\\Users\\alinikravesh\\Dropbox\\MyPersonalFolder\\University\\Simulation\\UnpredictableWorkload_Experiment.xls");
 		
 		//create decision maker
 //		ScalingUnitInterface decisionMaker = new ThresholdBasedFullHour(app);
@@ -106,9 +106,9 @@ public class Simulator{
 //		System.out.println("VM Thrashing: " + Integer.toString(app.GetVmThrashing()));
 //		System.out.println("SLA Violation Count: "+ Integer.toString(timer.GetSlaViolationCount()));
 //		System.out.println("Excessive Operational Cost: "+ Integer.toString(timer.GetExcessiveOperationalCost()));
-		double cost = (timer.GetSlaViolationCount() * vmCost) + (app.GetOperationalCost() * slaViolationCost) ;
+		double cost = (timer.GetSlaViolationCount() * 30) + (app.GetOperationalCost() * 1) ;
 		System.out.println("Individual: <"+pthrU+", "+pthrL+", "+pdurU+", "+pdurL+", "+pinU+", "+pinL+">");
-		System.out.println("Cost: "+ cost);
+		System.out.println("Cost: "+ cost + "|| operational cost:"+ (app.GetOperationalCost() * 1) + ", SLA violation:" + (timer.GetSlaViolationCount() * 30));
 		System.out.println("------------------");
 		return cost;
 	}
