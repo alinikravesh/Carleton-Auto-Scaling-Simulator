@@ -97,10 +97,10 @@ public class ThresholdBasedFullHour implements ScalingUnitInterface{
 		return res;
 	}
 	
-	public void GenerateScalingAction(double load, int time, Application app)
+	public void GenerateScalingAction(double load, int time, Application app, double actualLoad)
 	{
 		ScalingTimerTick();	
-		//System.out.println("time:"+time+":load:"+load+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
+		System.out.println("time:"+time+":load:"+load+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity+":actualLoad:"+actualLoad);
 		for(int i=0; i<app.GetTierCount(); i++)
 		{
 			SoftwareTier st = app.GetTier(i);

@@ -91,7 +91,7 @@ public class AmazonDecisionMaker implements ScalingUnitInterface{
 		}
 		return res;
 	}
-	public void GenerateScalingAction(double load, int time, Application app) {
+	public void GenerateScalingAction(double load, int time, Application app, double actualLoad) {
 		//FOR EACH LAYER
 		//CALCULATE CPU UTILIZATION
 		//SET UPPER THRESHOLD AND LOWER THRESHOLD FOR THE UTILIZATION
@@ -152,5 +152,7 @@ public class AmazonDecisionMaker implements ScalingUnitInterface{
 			return -20.0;
 		return lT2;
 	}
+
+
 
 }

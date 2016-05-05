@@ -53,7 +53,7 @@ public class FitnessCalc {
         sm.SetVmCost(1);
         sm.SetSlaCost(1);
         try{
-        	fitness = sm.run();
+//        	fitness = sm.run();
         }
         catch(Exception e)
         {

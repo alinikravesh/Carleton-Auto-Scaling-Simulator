@@ -35,15 +35,16 @@ public class Timer {
 	public void tick()
 	{
 		try {
-			double load = monitor.GetWorkload(currentTime);			
-			decisionMaker.GenerateScalingAction(load, currentTime, app);	
+			double load = monitor.GetWorkload(currentTime);
+			double actualLoad = monitor.GetWorkloadActual(currentTime);
+			decisionMaker.GenerateScalingAction(load, currentTime, app, actualLoad);	
 			for(SoftwareTier st : app.GetTiers())
 			{
 				st.GetIaaS().Tick(currentTime);	
 			}
 //			if (currentTime == 2395)
 //			System.out.println(currentTime + ":" + app.GetResponseTime(load));
-			if (app.GetResponseTime(load) > Application.responseTimeThreshold)
+			if (app.GetResponseTime(actualLoad) > Application.responseTimeThreshold)
 			{
 //				System.out.println(currentTime);
 				slaViolationCount++;

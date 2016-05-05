@@ -47,7 +47,7 @@ public class ThresholdBasedDecisionMaker implements ScalingUnitInterface{
 		return res;
 	}
 	
-	public void GenerateScalingAction(double load, int time, Application app)
+	public void GenerateScalingAction(double load, int time, Application app, double actualLoad)
 	{
 		ScalingTimerTick();	
 		//System.out.println("time:"+time+":load:"+load+":ceiling:"+ceilingCapacity+":floor:"+floorCapacity);
